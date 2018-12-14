@@ -1,11 +1,11 @@
 % Preambel mit Einstellungen importieren
-\input{preambel}
+\input{tex/preambel.tex}
 
 % Dokumenteninfos importieren
-\input{docinfo.tex}
+\input{tex/docinfo.tex}
 
 % Literatur-Datenbank
-\addbibresource{literatur.bib}   % BibLaTeX-Datei mit Literaturquellen einbinden
+\addbibresource{literatur.bib} %Imports bibliography file
 
 \begin{document}
 \frontmatter
@@ -36,9 +36,13 @@
 
 % ------------------------------------------------------------------
 % Hauptteil der Arbeit
-\input{kapitel/kapitel1} % Externe Datei einbinden
-\input{kapitel/kapitel2} % Externe Datei einbinden
-\input{kapitel/kapitel3} % Externe Datei einbinden
+\input{chapters/ch01_introduction}
+\input{chapters/ch02_related_work}
+\input{chapters/ch03_theoretical_background}
+\input{chapters/ch04_conceptual_design}
+\input{chapters/ch05_exemplaric_implementation}
+\input{chapters/ch06_proof_of_concept}
+\input{chapters/ch07_conclusion} 
 % ------------------------------------------------------------------
 
 \label{lastpage}
@@ -55,7 +59,7 @@
 
 % Abkürzungsverzeichnis
 \addchap{\hsmaabbreviations}
-\input{kapitel/abkuerzungen}
+\input{tex/chapters/abbreviations.tex}
 
 % Tabellenverzeichnis erzeugen
 \cleardoublepage
@@ -76,13 +80,9 @@
 \lstlistoflistings
 
 % Literaturverzeichnis erzeugen
-\begingroup
-\cleardoublepage
 \begin{flushleft}
-\let\clearpage\relax % Fix für leere Seiten (isue #25)
 \printbibliography
 \end{flushleft}
-\endgroup
 
 % Index ausgeben. Wenn Sie keinen Index haben, entfernen Sie einfach
 % diesen Teil.
@@ -94,7 +94,7 @@
 % Anhang. Wenn Sie keinen Anhang haben, entfernen Sie einfach
 % diesen Teil.
 \appendix
-\input{kapitel/anhang-a}
-\input{kapitel/anhang-b}
+\input{tex/chapters/attachment-a.tex}
+\input{tex/chapters/attachment-b.tex}
 
 \end{document}
