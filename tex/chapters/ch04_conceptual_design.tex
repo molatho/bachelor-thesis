@@ -17,15 +17,22 @@ Before AI engineers can use the system, designers need to set up the robot and v
 \label{fig:use-cases}
 \end{center}
 
-Figure \ref{fig:use-cases} shows the high-level use-cases described in both modes, implicating the need for at least three components: one that will be used to control robots (\textit{"RobotController"}), one that manages taking screenshots (\textit{"Recording"}) and one that allows designers to set up scenes (\textit{"SceneManagement"}).
+Figure \ref{fig:use-cases} shows the high-level use-cases described in both modes, implicating the need for at least three high-level functionalities (\ref{fig:component-diagram}): one that will be used to control robots (\textit{"RobotController"}), one that manages taking screenshots (\textit{"Recording"}) and one that allows designers to set up scenes (\textit{"SceneManagement"}).
 
 \begin{center}
 \noindent\includegraphics[width=12cm]{tex/img/ch04/Component_Diagram01.png}
-\captionof{figure}{Abstract component diagram}
-\label{fig:component-diagram-depth0}
+\captionof{figure}{High-level component diagram}
+\label{fig:component-diagram}
 \end{center}
 
-Further refining the component-diagram 
+Refining the \textit{Recording}-functionality yields two new components: \textit{"RenderingController"} shall be used to generate images from a robot's perspective while \textit{"ObjectLabeling"} identifies
+
+\begin{center}
+\noindent\includegraphics[width=12cm]{tex/img/ch04/Component_Diagram_Recording03.png}
+\captionof{figure}{Recording-functionality}
+\label{fig:component-diagram}
+\end{center}
+
 
 %\begin{wrapfigure}{R}{0.3\textwidth}
 %\centering
