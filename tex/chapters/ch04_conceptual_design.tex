@@ -1,10 +1,12 @@
 % Die Arbeit besteht aus Kapiteln (chapter)
 \chapter{Conceptual Design}
+\label{chap:conceptual-design}
 The goal of this thesis is to develop a system that allows generating large sets of images for training neural networks. As this environment shall be used as a drop-in replacement for conventional methods such as taking photos and labeling those by hand, the generated images must be of excellent quality and labeled.\\
-The concept is designed so that it is operating-system-, platform- and programming-language-agnostic.
+The concept is designed so that it is operating-system-, platform- and framework-agnostic. This results in an abstract concept that describes a basic architecture and abstract components. 
 
-\section{General Design}
-At its core the system features at least one virtual environment (a "scene") and a robot used by AI engineers and configured by designers (\ref{fig:use-cases}). It allows AI engineers to operate in one of two modes: \textit{"manual control"} lets them take control of a virtual robot and maneuver it in the virtual scene. This includes accelerating, decelerating and steering the robot as well as resetting it in case of being unable to maneuver (this may be the case when the robot is flipped or trapped between objects). This mode can be used to evaluate the usefulness (e.g. mobility) of certain robot-bodies in certain environments.\\
+%////////////////////////////////////////////////
+\section{User interaction}
+At its core the system features at least one virtual environment (a "scene") and a robot used by AI engineers and configured by designers (figure \ref{fig:use-cases}). It allows AI engineers to operate in one of two modes: \textit{"manual control"} lets them take control of a virtual robot and maneuver it in the virtual scene. This includes accelerating, decelerating and steering the robot as well as resetting it in case of being unable to maneuver (this may be the case when the robot is flipped or trapped between objects). This mode can be used to evaluate the usefulness (e.g. mobility) of certain robot-bodies in certain environments.\\
 The second mode of operation, \textit{"automatic mode"}, allows AI engineers to let the robot travel along preconfigured paths.\\
 While any of these modes is active, they can enable and disable automatic capturing of screenshots. This feature lets the system alter the scene and take screenshots from the robot's perspective in fixed intervals. It is used to create the aforementioned sets of images and does not require any user-interaction at run-time.\\
 Before AI engineers can use the system, designers need to set up the robot and virtual environment, including placement and configuration of 3D meshes of the environment, \textit{waypoints} and \textit{mutators}.\\
@@ -17,7 +19,9 @@ Before AI engineers can use the system, designers need to set up the robot and v
 \label{fig:use-cases}
 \end{center}
 
-Figure \ref{fig:use-cases} shows the high-level use-cases described in both modes, implicating the need for at least three high-level functionalities (\ref{fig:component-diagram}): one that will be used to control robots (\textit{"RobotController"}), one that manages taking screenshots (\textit{"Recording"}) and one that allows designers to set up scenes (\textit{"SceneManagement"}).
+%////////////////////////////////////////////////
+\section{Components}
+Figure \ref{fig:use-cases} shows the high-level use-cases described in both modes, implicating the need for three high-level features (\ref{fig:component-diagram}): one that will be used to control robots (\textit{RobotController}), one that manages taking screenshots (\textit{Recording}) and one that allows designers to set up scenes (\textit{SceneManagement}).
 
 \begin{center}
 \noindent\includegraphics[width=12cm]{tex/img/ch04/Component_Diagram01.png}
@@ -25,28 +29,25 @@ Figure \ref{fig:use-cases} shows the high-level use-cases described in both mode
 \label{fig:component-diagram}
 \end{center}
 
-Refining the \textit{Recording}-functionality yields two new components: \textit{"RenderingController"} shall be used to generate images from a robot's perspective while \textit{"ObjectLabeling"} identifies
+Refining the \textit{Recording}-package yields two components (\ref{fig:component-diagram-recording}): \textit{RenderingController} shall generate images from a robot's perspective and save them while \textit{ImageLabeller} adds \textit{Labels} to the images and saves them.
 
 \begin{center}
 \noindent\includegraphics[width=12cm]{tex/img/ch04/Component_Diagram_Recording03.png}
-\captionof{figure}{Recording-functionality}
-\label{fig:component-diagram}
+\captionof{figure}{Recording-package}
+\label{fig:component-diagram-recording}
 \end{center}
 
+The \textit{SceneManagement}-package also contains two components (\ref{fig:component-diagram-scenemanagement}): the \textit{MutationManager} manages the aforementioned mutators in scenes (e.g. triggering and resetting mutations), the \textit{WaypointManager} holds a list of paths consisting of multiple waypoints.
 
-%\begin{wrapfigure}{R}{0.3\textwidth}
-%\centering
-%\includegraphics[width=0.8\textwidth]{tex/img/ch04/Component_Diagram01.png}
-%\caption{\label{fig:frog1}Abstract component diagram}
-%\end{wrapfigure}
+\begin{center}
+\noindent\includegraphics[width=12cm]{tex/img/ch04/Component_Diagram_SceneManagement02.png}
+\captionof{figure}{SceneManagement-package}
+\label{fig:component-diagram-scenemanagement}
+\end{center}
 
-\section{Frontend: Game Engine}
+%////////////////////////////////////////////////
+%\section{Architecture}
 
-\subsection{TBD}
+%\subsection{Frontend: Game engine}
 
-\subsubsection{TBD}
- 
-\paragraph{TBD} TBD
-\paragraph{lelelel}
-
-\section{Backend: Renderer}
+%\subsection{Backend: Renderer}
