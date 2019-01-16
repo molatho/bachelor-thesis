@@ -41,6 +41,7 @@
 \usepackage{scrhack}              % Get rid of tocbasic warnings
 \usepackage[pagebackref=false,german]{hyperref}  % Hyperlinks
 \usepackage[all]{hypcap}          % Korrekte Verlinkung von Floats
+\usepackage{subcaption} 
 \usepackage[autostyle=true,german=quotes]{csquotes}   % Zitate
 \usepackage[backend=biber,
   isbn=false,                     % ISBN nicht anzeigen, gleiches geht mit nahezu allen anderen Feldern
@@ -146,7 +147,8 @@
 \automark[chapter]{chapter}
 
 % Einstellungen für Schriftarten
-\setkomafont{pagehead}{\normalfont\sffamily}
+%\setkomafont{pagehead}{\normalfont\sffamily}
+\setkomafont{pageheadfoot}{\normalfont\sffamily}
 \setkomafont{pagenumber}{\normalfont\sffamily}
 \setkomafont{paragraph}{\sffamily\bfseries\small}
 \setkomafont{subsubsection}{\sffamily\itshape\bfseries\small}
