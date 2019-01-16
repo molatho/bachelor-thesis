@@ -9,18 +9,7 @@
 \chapter{Conceptual Design}
 \label{chap:conceptual-design}
 The goal of this thesis is to develop a system that allows generating large sets of images for training neural networks. As this environment shall be used as a drop-in replacement for conventional methods such as taking photos and labeling those by hand, the generated images must be of excellent quality and labeled.\\
-The concept is designed so that it is operating-system-, platform- and framework-agnostic. This results in an abstract concept that describes a basic architecture and abstract components.
-
-%////////////////////////////////////////////////
-\section{System Environment and Terminology}
-\paragraph{Scenes} The system features at least one virtual 3D environment (a \textit{scene}) that represents a specific place (either an existing or non-existing place) and a virtual avatar that operates in said environment. It is used by two groups of users: \textit{designers} and \textit{AI (artificial intelligence) engineers}.
-\paragraph{Avatar} A virtual avatar is a representation of a real operator such as a robot or human. It is mainly used to navigate a virtual camera used for capturing images around scenes. The specific design of the avatar depends on the application of the object-recognition software trained with images generated using this concept.
-\paragraph{Designers} Scenes need to created, populated and configured. Designers set up scenes so that they can be used in a production environment. They recreate existing or non-existing places by adding 3D objects and light-sources to scenes. Depending on the specific use of the scene and individual objects in it, designers can add \textit{mutators} to any entities in a scene and equip them with an initial configuration. They can also add waypoints to the scene for automated capture of images.
-\paragraph{AI Engineers} Use the system to generate labeled sets of images. To do so they can use the system in one of two modes: \textit{"manual control"} lets them take control of a virtual robot and maneuver it in the virtual scene. This includes accelerating, decelerating and steering the robot as well as resetting it in case of being unable to maneuver (this may be the case when the robot is flipped or trapped between objects). This mode can be used to evaluate the usefulness (e.g. mobility) of certain robot-bodies in certain environments.\\
-The second mode of operation, \textit{"automatic mode"}, allows AI engineers to let the robot travel along preconfigured paths. In this mode the system runs without any user-interaction.
-\paragraph{Mutators} In order to provide visual variety to the generated images mutators alter the state of various attributes of entities in scenes step by step. For instance, they can be used to manipulate the intensity, range and color of light-sources, resulting in images that feature different lighting. Mutators are to be implemented and used as deemed useful by designers and AI engineers.
-\paragraph{Waypoints} Are simple coordinates in the 3D space of a scene that can be used to define paths that avatars can travel along.
-
+The concept is designed so that it is operating-system-, platform- and framework-agnostic. This results in an abstract concept that describes a basic architecture and abstract components. 
 
 %////////////////////////////////////////////////
 \section{User interaction}
