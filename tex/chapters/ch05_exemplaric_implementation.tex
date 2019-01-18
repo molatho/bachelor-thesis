@@ -1,27 +1,31 @@
 % Die Arbeit besteht aus Kapiteln (chapter)
-\chapter{Implementation}
+\chapter{Exemplaric Implementations}
 Implementing the concept presented in \autoref{chap:conceptual-design} can be done in two parallel processes: writing the software itself and designing content such as 3D meshes of the robot and environment.
 
+%////////////////////////////////////////////////
 \section{Goal and constraints}
 The goal of this implementation was to generate images for detection of doors in buildings. 
 
 %////////////////////////////////////////////////
-\section{Implementing the concept in software}
-\subsection{Unity stuff}
-\subsection{Blender interface}
+\section{Implementation I: Raycasting Using Blender}
+Goal: Use Blender as an offline renderer, allowing for potentially photorealistic images being generated using a raycasting engine like cycles.
 
 %////////////////////////////////////////////////
-\section{Designing content}
-\subsection{Rebuilding a real environment}
-The environment chosen for this implementation was the second floor of Building A in Hochschule Mannheim. 
-
+\section{Implementation II: Rasterization Using Unity}
+Hypothesis: Rasterized images that are not photorealistic may still be of such high quality that they are sufficient for training CNNs. [TBD]
+\subsection{Identifying Classifiers}
+\subsubsection{Approach I: Using Coordinate-Transformations}
+WorldToScreen (Bounding boxes/Colliders) [TBD]
+\subsubsection{Approach II: Raycasting}
+[TBD]
 
 %////////////////////////////////////////////////
-\section{Generating images}
 
-\subsection{Format}
-\subsubsection{TBD}
- 
-\paragraph{TBD}
+\subsection{Choice of Tools}
+Comparision of engines (Unity, Unreal, Source, Cryengine, Frostbite) [TBD] \ref{table:game-engines}
 
-\section{}
+\subsection{Designing content}
+\subsubsection{Rebuilding a real environment}
+The environment chosen for this implementation was the second floor of Building A of University of Applied Sciences Mannheim. [TBD]
+\subsubsection{Optimizing Performance}
+High-to-Lowpoly [TBD]
