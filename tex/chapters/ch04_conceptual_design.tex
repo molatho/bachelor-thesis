@@ -23,15 +23,27 @@ The system features at least one virtual 3D environment (a \textit{scene}) that 
 % *** Robots
 A virtual \textit{robot} is a representation of a real or fictional robot. It is mainly used to navigate a virtual camera used for capturing records from the robot's perspective while its movement is restricted by its body's specifics (considering different types of drives such as limbs or wheels and their respective attributes such as degrees of freedom or torque).\\
 % *** Designers
-Scenes need to be created, populated and configured. \textit{Designers} set up scenes so that they can be used in a production environment. They recreate existing or non-existing places by adding 3D objects and light-sources to scenes. Depending on the specific use of the scene and individual objects in it, designers can add \textit{mutators} to any entities in a scene and equip them with an initial configuration. They can also add waypoints to the scene for allow robots to travel along paths.\\
+Scenes need to be created, modeled using geometry, populated with entities and configured. \textit{Designers} set up scenes so that they can be used in a production environment. They recreate existing or non-existing places by adding 3D objects and light-sources to scenes. Depending on the specific use of the scene and individual objects in it, designers can add \textit{mutators} to any entities in a scene and equip them with an initial configuration. They can also add waypoints to the scene for allow robots to travel along paths.\\
 % *** AI engineers
-\textit{\acs{AI} engineers} use the system to capture records. To do so they can use the system in one of two modes: \textit{"manual control"} lets them take control of robots and maneuver them in scenes, textit{"automatic mode"} allows them to let robots travel along preconfigured paths. At any time they can toggle automatic capture and labeling of images and activity of mutators.\\
+\textit{\acs{AI} engineers} use the system to capture records. To do so they can use the system in one of two modes: \textit{"manual control"} lets them take control of robots and maneuver them in scenes, \textit{"automatic mode"} allows them to let robots travel along preconfigured paths. At any time they can toggle automatic capture and labeling of images and activity of mutators.\\
 % *** Records
 A \textit{record} is a data-structure that contains an image and meta-data about the image, such as the location and view-angles of the camera at the time of capturing the image and a list of labels. \textit{Labels} hold information about the region in an image that a classifier was identified at.
+
+\begin{center}
+\noindent\includegraphics[width=8cm]{tex/img/ch04/Classes_Record01.png}
+\captionof{figure}{Datastructure "Record"}
+\label{fig:classes-record}
+\end{center}
 % *** Mutators
 In order to provide visual variety to the generated images, \textit{mutators} alter the state of various attributes of entities in scenes step by step. For instance, they can be used to manipulate the intensity, range and color of light-sources, resulting in images that feature different lighting. Mutators are to be implemented and used as deemed useful by designers and AI engineers.\\
 % *** Waypoints
-\textit{Waypoints} are simple coordinates in the 3D space of a scene that can be used to define paths that robots can travel along.\\
+\begin{wrapfigure}{R}{0.4\textwidth}
+\centering
+\includegraphics[width=0.4\textwidth]{tex/img/ch04/Classes_Waypoint01.png}
+\captionof{figure}{Datastructure "Waypoint"}
+\label{fig:classes-waypoint}
+\end{wrapfigure}
+\textit{Waypoints} are simple coordinates in the 3D space of a scene that can be used to define paths that robots can travel along.
 
 \begin{center}
 \noindent\includegraphics[width=6cm]{tex/img/ch04/UseCases_HighLevel_01.png}
@@ -51,15 +63,15 @@ The specific design of scenes and robots and the implementation of mutators depe
 \section{User Interaction}
 The use-cases shown in Figure \ref{fig:use-cases-abstract} need to be further refined into specific features before specific components can be deduced from them.
 
-\paragraph{Use-Case "Control Robot"} \acs{AI} engineers may want to take control of robots and maneuver them in scenes by accelerating, decelerating and steering them or resetting them in case of being unable to maneuver (this may be the case when the robot was flipped or trapped between objects). While operating in manual mode, this can also be used to evaluate the usefulness (e.g. mobility) of certain robot-bodies in certain environments, presuming that the scene and robot behave like they would in real-life. This may require physics simulation for gravity and collision detection, and mechanics simulation for kinematics. Also, manual control of robots requires a careful choice of input devices: \acs{AI} engineers should use input devices allow for precise and true to original control of robots. For instance, a combination of a steering wheel and gas and break pedals closely resembles the control options present in cars whereas joysticks can be mapped to control torque of continuous tracks used on tracked vehicles.
+\paragraph{Use-Case "Control Robot"} \acs{AI} engineers may want to take control of robots and maneuver them in scenes by accelerating, decelerating and steering them or resetting them in case of being unable to maneuver. This may be the case when the robot was flipped or trapped between objects. Operating in manual mode can also be used to evaluate the usefulness (e.g. mobility) of certain robot-bodies in certain environments, presuming that the scene and robot behave like they would in real-life, and may even be used to validate that the specific combination of robot-body and scene in a scenario operates as expected. This may require physics simulation for gravity and collision detection, and mechanics simulation for kinematics.\\
+Also, manual control of robots requires a careful choice of input devices: \acs{AI} engineers should use input devices that allow for precise and true to original control of robots. For instance, a combination of a steering wheel and gas and break pedals closely resembles the control options present in cars whereas two independent joysticks can be used to control torque of two continuous tracks used on tracked vehicles.
 
 \paragraph{Use-Case "Manage Recording"} \acs{AI} engineers need to be able to start and stop automatic capturing of records. As records are effectively pairs of images and a list of labels, both elements of these pairs must be provided by the system: it needs to feature a component that captures images from a camera held by a robot in a scene. To populate records with labels the system needs to provide a component that identifies classifiers in the captured images.
 
-\paragraph{Use-Case "Manage Scene"}
-[TBD]
-% Designer: import assets (3d meshes, textures, mapshttps://www.google.com/search?q=bausteinsicht&source=lnms&tbm=isch&sa=X&ved=0ahUKEwiEmcHXkfffAhW6isMKHezUAwIQ_AUIDigB&biw=1642&bih=919#imgrc=HlRZw2laH-EwLM:) of scene and robots, add & configure mutators
-% AI engineer: edit mutators/waypoints
+\paragraph{Use-Case "Manage Scene"} Designers need to import assets (such as 3D models, materials and textures) into the system in order to add geometry to scenes and configure robots that can be used by \acs{AI} engineers. Depending on the requirements of the scenario at hand, designers may need to add various entities such as light-sources or movable objects to scenes and equip them with an initial set of configurable mutators. Optionally, designers may add waypoints to scenes to provide paths for robots to travel along.\\
+\acs{AI} engineers may want to configure mutators at run-time in order to explore and study their effects on scenes (such as changes in lighting). Also they may want to add or change waypoints to vary what parts of scenes are captured during recording sessions.
 
+Figure \ref{fig:use-cases} summarizes these refinements and shows
 \begin{center}
 \noindent\includegraphics[width=10cm]{tex/img/ch04/UseCases_Fine_01.png}
 \captionof{figure}{Refined Use-Cases [TBD]}
