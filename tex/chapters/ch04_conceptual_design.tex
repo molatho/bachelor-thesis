@@ -49,7 +49,7 @@ The specific design of scenes and robots and the implementation of mutators depe
 
 %////////////////////////////////////////////////
 \section{User Interaction}
-The use-cases shown in \ref{fig:use-cases-abstract} require further refinement before specific components can be deduced from them.
+The use-cases shown in Figure \ref{fig:use-cases-abstract} need to be further refined into specific features before specific components can be deduced from them.
 
 \paragraph{Use-Case "Control Robot"} \acs{AI} engineers may want to take control of robots and maneuver them in scenes by accelerating, decelerating and steering them or resetting them in case of being unable to maneuver (this may be the case when the robot was flipped or trapped between objects). While operating in manual mode, this can also be used to evaluate the usefulness (e.g. mobility) of certain robot-bodies in certain environments, presuming that the scene and robot behave like they would in real-life. This may require physics simulation for gravity and collision detection, and mechanics simulation for kinematics. Also, manual control of robots requires a careful choice of input devices: \acs{AI} engineers should use input devices allow for precise and true to original control of robots. For instance, a combination of a steering wheel and gas and break pedals closely resembles the control options present in cars whereas joysticks can be mapped to control torque of continuous tracks used on tracked vehicles.
 
