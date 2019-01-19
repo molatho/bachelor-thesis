@@ -8,29 +8,33 @@
 
 \chapter{Conceptual Design}
 \label{chap:conceptual-design}
-The goal of this thesis is to develop a system that allows generating large sets of images for training neural networks. As this environment shall be used as a drop-in replacement for conventional methods such as taking photos and labeling those by hand, the generated images must be of excellent quality and labeled.\\
-This chapter will introduce the terminology, central ideas and architectural basics of a concept that can be used for implementation by explaining its high-level features using use-cases, refining those to specific user-interactions and deducing components from them. 
+The goal of this thesis is to develop a system that allows generating large sets of images for training neural networks. As this environment shall be used as a drop-in replacement for conventional methods such as taking photos and labelling those by hand, the generated images must be of excellent quality and labelled.\\
+This chapter will introduce the terminology, central ideas and architectural basics of a concept that can be used to implement the system by explaining its high-level features using use-cases, refining those to specific user-interactions and deducing components from those. 
 
 %////////////////////////////////////////////////
 \section{System Environment and Terminology}
 % *** Scenes
-The system features at least one virtual 3D environment (a \textit{scene}) that represents a specific place (either an existing or non-existing place) and a virtual \textit{robot} that operates in said environment. It is used by two groups of users: \textit{designers} and \textit{\ac{AI} engineers}. Figure \ref{fig:use-cases-abstract} shows these groups of users and their high-level and abstract use-cases.\\
+The system features at least one virtual 3D environment (a \textit{scene}) that represents a specific place (either an existing or non-existing place) and a virtual \textit{robot} that operates in said environment. It is used by two groups of users: \textit{designers} and \textit{\ac{AI} engineers}. Figure \ref{fig:use-cases-abstract} shows these groups of users and their high-level and abstract use-cases.
+\begin{center}
+\noindent\includegraphics[width=6cm]{tex/img/ch04/UseCases_HighLevel_01.png}
+\captionof{figure}{High-level Use-Cases}
+\label{fig:use-cases-abstract}
+\end{center}
 % *** Robots
 A \textit{virtual robot} is a representation of a real or fictional robot. It is mainly used to navigate a virtual camera used for capturing \textit{records} from the robot's perspective while its movement is restricted by its body's specifics, considering different types of drives (such as limbs or wheels) and their respective attributes (such as degrees of freedom or torque).\\
 % *** Designers
 Scenes need to be created, modeled using geometry, populated with entities and configured. \textit{Designers} set up scenes so that they can be used by \acs{AI} engineers in a production environment. They recreate existing or non-existing places by adding 3D objects and \textit{entities} to scenes. Depending on the specific use of the scene and individual objects in it, designers can add \textit{mutators} to any entities in a scene and equip them with an initial configuration. They can also add waypoints to scenes that constitute paths for robots to travel along.\\
-% *** Entities
-\textit{Entities} can be understood as objects in scenes that add more content to a scene than just geometry. Any objects that interact with scenes or other objects within scenes can be understood as entities. This includes light-sources and objects that can be interacted with physically (like doors).
-% *** AI engineers
-\textit{\acs{AI} engineers} use the system to capture records. To do so they can use the system in one of two modes: \textit{"manual control"} lets them take control of robots and maneuver them in scenes, \textit{"automatic mode"} allows them to let robots travel along preconfigured paths. At any time they can toggle automatic capture and labeling of images and activity of mutators.\\
 % *** Records
 A \textit{record} is a data-structure that contains an image and a list of labels. \textit{Labels} hold information about the region in an image that a classifier was identified at. Records may contain meta-data about images, such as the location and view-angles of the camera at the time of capturing the images. This meta-data may prove useful when reconstructing the exact position of robots from generated sets of images.
-
 \begin{center}
 \noindent\includegraphics[width=8cm]{tex/img/ch04/Classes_Record01.png}
 \captionof{figure}{Data-structure "Record"}
 \label{fig:classes-record}
 \end{center}
+% *** Entities
+\textit{Entities} can be understood as objects in scenes that add more content to a scene than just geometry. Any objects that interact with scenes or other objects within scenes can be understood as entities. This includes light-sources and objects that can be interacted with physically (like doors).
+% *** AI engineers
+\textit{\acs{AI} engineers} use the system to capture records. To do so they can use the system in one of two modes: \textit{"manual control"} lets them take control of robots and maneuver them in scenes, \textit{"automatic mode"} allows them to let robots travel along preconfigured paths. At any time they can toggle automatic capture and labelling of images and activity of mutators.\\
 % *** Mutators
 In order to provide visual variety to the generated images, \textit{mutators} alter the state of various attributes of entities in scenes in a step-wise fashion. For instance, they can be used to manipulate the intensity, range and color of light-sources, resulting in images that feature different lighting. The amount of steps a mutator needs to perform alterations on before completing a full mutation-cycle depends on the range of values it can assign to attributes. Binary mutators (e.g. used to turn lights on or off) only take two steps to complete a mutation-cycle, more complex mutators may step through arbitrary value ranges though (e.g. dimming light-intensity from 100 to 0 percent in 5 percent steps, requiring 20 steps total). \\
 % *** Waypoints
@@ -39,12 +43,6 @@ In order to provide visual variety to the generated images, \textit{mutators} al
 \noindent\includegraphics[width=4cm]{tex/img/ch04/Classes_Waypoint02.png}
 \captionof{figure}{Data-structure "Waypoint"}
 \label{fig:classes-waypoint}
-\end{center}
-
-\begin{center}
-\noindent\includegraphics[width=6cm]{tex/img/ch04/UseCases_HighLevel_01.png}
-\captionof{figure}{High-level Use-Cases}
-\label{fig:use-cases-abstract}
 \end{center}
 
 The specific design of scenes and robots and the implementation of mutators depend on the scenario that the object-recognition software, that is to be trained, is used in: software run on cars should be trained using images generated in scenes that represent the environment the car is planned to be operated in and the robots used in these scenes should be modeled so they closely represent the car the software is to be run on, considering physical attributes (such as the car's shape, surfaces and size), behaviour (including acceleration, weight and steering)  and sensor-placement, where visual sensors such as cameras are of the highest importance to the process of generating images.
@@ -60,15 +58,15 @@ The specific design of scenes and robots and the implementation of mutators depe
 The use-cases shown in Figure \ref{fig:use-cases-abstract} need to be further refined into specific features before specific components can be deduced from them.
 
 \subsubsection{Use-Case "Control Robot"}
-\acs{AI} engineers may want to take control of robots and maneuver them in scenes by accelerating, decelerating and steering them or resetting them in case of being unable to maneuver. This may be the case when the robot was flipped or trapped between objects. Operating in manual mode can also be used to evaluate the usefulness (e.g. mobility) of certain robot-bodies in certain environments, presuming that the scene and robot behave like they would in real-life, and may even be used to validate that the specific combination of robot-body and scene in a scenario operates as expected. This may require physics simulation for gravity and collision detection, and mechanics simulation for kinematics.\\
-Also, manual control of robots requires a careful choice of input devices: \acs{AI} engineers should use input devices that allow for precise and true to original control of robots. For instance, a combination of a steering wheel and gas and break pedals closely resembles the control options present in cars whereas two independent joysticks can be used to control torque of two continuous tracks used on tracked vehicles.
+\acs{AI} engineers may want to take control of robots and maneuver them in scenes by accelerating, decelerating and steering or resetting them in case of being unable to maneuver. This may be the case when the robot was flipped or trapped between objects. Operating in manual mode can also be used to evaluate the usefulness (e.g. mobility) of certain robot-bodies in certain environments, presuming that the scene and robot behave like they would in real-life, and may even be used to validate that the specific combination of robot-body and scene in a scenario operates as expected. This may require physics simulation for gravity and collision detection, and mechanics simulation for kinematics.\\
+Also, manual control of robots requires a careful choice of input-devices: \acs{AI} engineers should use input-devices that allow for precise and true to original control of robots. For instance, a combination of a steering wheel and gas and break pedals closely resembles the control options present in cars whereas two independent joysticks can be used to control torque of two continuous tracks on tracked vehicles.
 
 \subsubsection{Use-Case "Manage Recording"}
 \acs{AI} engineers need to be able to start and stop automatic capturing of records. As records are effectively pairs of images and a list of labels, both elements of these pairs must be provided by the system: it needs to feature a component that captures images from a camera held by a robot in a scene. To populate records with labels the system needs to provide a component that identifies classifiers in the captured images.
 
 \subsubsection{Use-Case "Manage Scene"}
 Designers need to import assets (such as 3D models, materials and textures) into the system in order to add geometry to scenes and configure robots that can be used by \acs{AI} engineers. Depending on the requirements of the scenario at hand, designers may need to add various entities such as light-sources or movable objects to scenes and equip them with an initial set of configurable mutators. Optionally, designers may add waypoints to scenes to provide paths for robots to travel along.\\
-\acs{AI} engineers may want to configure mutators at run-time in order to explore and study their effects on scenes (such as changes in lighting). Also they may want to add or change waypoints to vary what parts of scenes are captured during recording sessions.
+\acs{AI} engineers may want to configure mutators at run-time in order to explore and study their effects on scenes (such as changes in lighting). Also they may want to add or change waypoints to vary what part of a scene is captured during recording sessions.
 
 Figure \ref{fig:use-cases} summarizes these refinements and shows that most use-cases are interacted with by only one role, separating them into groups of use-cases required for initial setup ("Create ..."), run-time ("Robot" and "Recording" use-cases) and a special group that is used to tweak run-time behaviour to achieve varying sets of records ("Manage Waypoints", "Manage Mutators"). 
 \begin{center}
@@ -87,14 +85,14 @@ While the high-level use-cases (Figure \ref{fig:use-cases-abstract}) implicate t
 \label{fig:component-diagram}
 \end{center}
 % Recording
-The "Recording"-package (Figure \ref{fig:component-diagram-recording}) contains two abstract components: \textit{CaptureController} is used to start and stop automatic capturing of records. It captures images and enriches those with Labels by making use of the \textit{ImageLabeller}-component. The ImageLabeller-component needs to be able to identify classifiers in images. As neither capturing images nor identifying classifiers are necessarily trivial tasks, the implementation of both components is greatly influenced and in some cases dictated by the scenario and technology used. While capturing images is usually easily achieved in software that features visualization of the virtual environments, "headless" software running without any visual output may require external software to render images resulting in the CaptureController-component effectively being implemented by software running on two separate systems, increasing the complexity of the implementation.
+The "Recording"-package (Figure \ref{fig:component-diagram-recording}) contains two abstract components: \textit{CaptureController} is used to start and stop automatic capturing of records. It captures images and enriches those with labels by making use of the \textit{ImageLabeller}-component. The ImageLabeller-component needs to be able to identify classifiers in images. As neither capturing images nor identifying classifiers are necessarily trivial tasks, the implementation of both components is greatly influenced and in some cases dictated by the scenario and technology used. While capturing images is usually easily achieved in software that features visualization of the virtual environments, "headless" software running without any visual output may require external software to render images resulting in the CaptureController-component effectively being implemented by software running on two separate systems, increasing the complexity of the implementation.
 \begin{center}
 \noindent\includegraphics[width=6cm]{tex/img/ch04/ComponentDiagram_Recording04.png}
 \captionof{figure}{"Recording"-package}
 \label{fig:component-diagram-recording}
 \end{center}
 % Scenemanagement
-As indicated by the many use-cases involved in interacting with scenes (Figure \ref{fig:use-cases}), the "SceneManagement"-package (Figure \ref{fig:component-diagram-scenemanagement}) features multiple components.\\
+As indicated by the use-cases involved in interacting with scenes (Figure \ref{fig:use-cases}), the "SceneManagement"-package (Figure \ref{fig:component-diagram-scenemanagement}) features multiple components.\\
 The \textit{SceneGeometry}-component holds all 3D objects of a scene that amount to the visual representation and physical bodies of the place the scene is meant to represent. This includes both, objects that feature or lack actual physical collision (e.g. clouds).\\
 A \textit{SceneEntities}-component stores all \textit{entities} of a scene and manages their life-cycles. In a simple implementation this component could use lists or arrays internally.
 In each scene there is one \textit{MutationManager}-component. It holds a list of all mutators in a scene and, when active, advances only one mutator in a scene at a time so that each possible combination of attribute-mutations is present in a scene at least once. This implicates that each additional mutator added to a scene multiplies the number of steps required to fully step through all attribute-mutations by the number of steps required to step through the new mutator; the number of mutation-steps required to complete a full mutation-cycle grows exponentially.\\
