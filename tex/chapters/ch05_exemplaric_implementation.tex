@@ -49,10 +49,6 @@ After evaluating modern and popular game engines considering the abovementioned 
 \subsection{Designer: Building the Scene}
 \subsubsection{Rebuilding a real environment}
 As stated in \ref{section:goals-and-constraints} the environment used to base a scene on was the second floor of building "A" of University of Applied Sciences Mannheim. However at this time no 3D model of the floor, let alone the building existed so it had to be handcrafted using the resources that were available: a floor plan (shown in Figure \ref{fig:floor-plan-image}) and measurements taken by hand.
-% tex/img/ch05/FloorPlan03_small.JPG
-% \label{fig:floor-plan-image}
-% tex/img/ch05/BlenderFloor01.png
-% \label{fig:floor-plan-blender}
 \newlength{\twosubht}
 \newsavebox{\twosubbox}
 
@@ -126,12 +122,12 @@ There were few libraries that provide methods to import robots using URDF-files 
     \item Even though robots imported by ROS\# had the correct hierarchy of body-parts and correct physical properties (as defined in the robots' URDF), Unity's physics engine often times failed to simulate physics wrong at run-time, leading to robots being unable to move, falling through floors or being propelled into the air.
 \end{enumerate}
 
-To solve the first two problems, a simple set of filesystem-interfaces (were implemented fpr local filesystems and ZIP-archives.
+To solve the first two problems, a set of interfaces that represent filesystems, directories and files (\ref{fig:filesystem}) were implemented for local filesystems and ZIP-archives (using the open-source library \textit{"DotNetZip"} \cite{DotNetZip}) as URDF-files are often distributed in ZIP-archives including meshes and textures.
 
 \begin{center}
-\noindent\includegraphics[width=14cm]{tex/img/ch05/UnitySceneA205_02.png}
-\captionof{figure}{Reconstruction of room A205 in Unity Editor}
-\label{fig:unity-scene-a205}
+\noindent\includegraphics[width=14cm]{tex/img/ch05/URDFParser_FileSystemInterfaces02.png}
+\captionof{figure}{Interfaces for filesystems, directories and files}
+\label{fig:filesystem}
 \end{center}
 
 \subsection{Identifying Classifiers}
