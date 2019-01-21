@@ -73,7 +73,7 @@ As stated in \ref{section:goals-and-constraints} the environment used to base a 
 \end{figure}
 
 Figure \ref{fig:floor-plan-blender} shows the reconstruction of the basic layout of the floor in Blender. As the goal of this implementation was to generate records used for detecting doors, special attention had to be paid to modeling the doors in this floor. This required taking measures of the doors themselves, their handles and frames as well as reconstruction of the properties of their surfaces. Figure \ref{fig:doors} shows the various doors present on this floor: utility doors (shown in \ref{fig:door01} featured metallic handles, a black and matte metal surface and were broader than most other doors. Lecture doors (\ref{fig:door02}) had blue matte metal surfaces and were not on the same level as the walls but inset into the walls. They also had glass-panels located right above them. The portals (\ref{fig:door03}) to the lecture rooms, one present at each end of the hallway, had glass doors and panels and matte black metal beams and frames. Lastly there were doors to storage rooms (\ref{fig:door04}) that did not feature great geometrical detail as the other doors did. They blended into the wall and featured shiny metal knobs and hinges.
-%Fokus: Türen, möglicherweise Hindernisse im Weg (Stühle), interessant waren Fenster, im FLur nur indirekt Beleuchtung, Wände (Reflektionen, Helligkeiten), verschiedene Türen (Overfläche, Farbe, Geometrie [Glas, Fenster, Mauer])
+% TBD a und b trivial, c und d wegen glass und hintergrund schwierig?
 
 \begin{figure}[htp]
     % preliminary
@@ -104,7 +104,7 @@ Figure \ref{fig:floor-plan-blender} shows the reconstruction of the basic layout
     \label{fig:doors}
 \end{figure}
 
-The reconstructed doors could now be used to render very detailed door meshes with realistic surfaces. However other objects had to be reconstructed: as lighting would have great influence on the generated images, the large window facades covering the building and feature blinds were added to the scene along with a set of other common objects present in the floor like air-conditioning pipes on ceiling, radiators and tables. Figure \ref{fig:unity-scene-a205} shows the final reconstruction of the room A205 which is the first room on the second floor. It features windows with blinds that cast shadows on the walls and objects and it features obstacles (such as tables) that may occlude other objects of interest such as the doors.
+The reconstructed doors could now be used to render very detailed door meshes with realistic surfaces. However other objects also had to be reconstructed: as lighting would have great influence on generated images, large window facades that cover the building's exterior and feature blinds were added to the scene along with a set of other common objects present in the floor like lamps and air-conditioning pipes on the ceiling, radiators and tables. Figure \ref{fig:unity-scene-a205} shows the final reconstruction of room \textit{"A205"} which is the first room on the second floor of the building. It features windows with blinds that cast shadows on the walls and objects and it features obstacles (such as tables) that may occlude other objects of interest such as the blue door.
 
 \begin{center}
 \noindent\includegraphics[width=14cm]{tex/img/ch05/UnitySceneA205_02.png}
@@ -114,30 +114,119 @@ The reconstructed doors could now be used to render very detailed door meshes wi
 
 \subsection{Importing Robots into Scenes}
 After recreation of the scene's geometry, a robot was needed for \acp{AI} engineers to navigate around the scene and capture records. For this implementation the robot model "Pioneer 3AT" was chosen as the Institute of Robotics of University of Applied Sciences Mannheim works with "Pioneer"-robots and there were \acp{URDF} files of it available \cite{AmrRosConfig} online.\\
-There were few libraries that provide methods to import robots using URDF-files into Unity, an extensive one was \textit{"ROS\#"} which was developed by Siemens AG. It was described as "a set of open source software libraries and tools in C# for communicating with ROS from .NET applications, in particular Unity3D" \cite{RosSharp}. This project implemented connecting to ROS instances, ROS' publish/subscribe pattern and importing robots into Unity scenes, however its software design introduced some potential problems: 
+There were few libraries that provide methods to import robots using URDF-files into Unity, an extensive one was \textit{"ROS\#"} which was developed by Siemens AG. It was described as "a set of open source software libraries and tools in C\# for communicating with ROS from .NET applications, in particular Unity3D" \cite{RosSharp}. This project implemented connecting to ROS instances, ROS' publish/subscribe pattern and importing robots into Unity scenes, however its software design introduced some potential problems: 
 \begin{enumerate}
     \item Importing robots using URDF-files was done by downloading URDF-files from running ROS-instances. The need for a running ROS-instance would add to the system requirements VERE runs on.
     %ros-sharp/Unity3D/Assets/RosSharp/Scripts/Urdf/Editor/UrdfComponents/UrdfRobotExtensions.cs
     \item ROS\#'s URDF importing component required the URDF files to be present in the "Asset" folder of Unity-projects. This meant that URDF-files downloaded from remote locations needed to be written to disk and compressed archives that contained additional files like meshes and textures needed to be extracted to disk first.
     \item Even though robots imported by ROS\# had the correct hierarchy of body-parts and correct physical properties (as defined in the robots' URDF), Unity's physics engine often times failed to simulate physics wrong at run-time, leading to robots being unable to move, falling through floors or being propelled into the air.
 \end{enumerate}
-
-To solve the first two problems, a set of interfaces that represent filesystems, directories and files (\ref{fig:filesystem}) were implemented for local filesystems and ZIP-archives (using the open-source library \textit{"DotNetZip"} \cite{DotNetZip}) as URDF-files are often distributed in ZIP-archives including meshes and textures.
-
+To solve these problems, a library for parsing URDF-files, \textit{"URDFParser.NET"}, was implemented. The first two problems were solved by implementing a set of interfaces that represent filesystems, directories and files (\ref{fig:filesystem}) for local filesystems and ZIP-archives (using the open-source library \textit{"DotNetZip"} \cite{DotNetZip}) as URDF-files including meshes and textures were usually distributed as ZIP-archives. These interfaces could also be implemented to read files from remote locations such as FTP-servers or websites for future scenarios and use-cases.
 \begin{center}
-\noindent\includegraphics[width=14cm]{tex/img/ch05/URDFParser_FileSystemInterfaces02.png}
+\noindent\includegraphics[width=14cm]{tex/img/ch05/URDFParser_FileSystemInterfaces03.png}
 \captionof{figure}{Interfaces for filesystems, directories and files}
 \label{fig:filesystem}
 \end{center}
+Contrary to ROS\#'s approach of interpreting hard-coded XML-elements, in URDFParser.NET parsing the URDF-files was implemented by defining \acp{DTO} for the different URDF-elements. URDF-Files could then be deserialized using these \acsp{DTO} with the \textit{"XmlSerializer"}-class provided by the .NET-Framework \cite{XmlSerializer}.\\
+The third problem with ROS\#'s implementation, faulty behaviour of physical bodies, required manual adjustments to the imported robot models: rearranging the robots' hierarchy so that there is at all times a physical object may have only one physical child object solved robots' inability to move and ensuring that colliders of physical parts (such as wheels and chassis) did not intersect with each other eliminated robots spontaneously launching into the air. 
 
 \subsection{Identifying Classifiers}
-% ** WorldToScreen
-\subsubsection{Approach I: Using Coordinate-Transformations}
-WorldToScreen (Bounding boxes/Colliders) [TBD]
+Proper identification of objects in captured images proved to be a non-trivial problem and the solution to this problem used in VERE took multiple approaches until it produced satisfying results.\\
+In order to specify which objects were of interest and shall be identified in captured images, each relevant object had a "Taggable"-component added to it which specified a "Label Name" that would be treated as a classifier. 
+
+\subsubsection{Approach I: Using Projection and Raycasting}
+The first approach to identifying which objects were visible from a given camera's perspective was to try to cast rays to each "tagged" object and, if hit, project its position from world-space into the screen-space of the camera. If the returned screen-space position was invalid, the object would not be visible. Cameras in the Unity Engine provide the \textit{"WorldToScreenPoint"} \cite{UnityDocsCamera} method that performs the projection from world-space to screen-space.\\
+Objects in the Unity Engine have \textit{Transforms} that specify location, rotation and scale. These do not translate to colliders of objects though and can not directly be used to determine if an object is hit by a raycast or not as an object may have no colliders that cover its location (e.g. donut-shaped objects). Therefore, the projection approach needed to consider objects' colliders. A solution to this was to define a set of points to test for along the edges and on the surfaces of colliders: an algorithm would create a point for each vertex of a collider and add a configurable amount of points along edges and surfaces. Each point of these sets could then be tested for using ray-casting and projection.\\
+Figure \ref{fig:w2s-labelling} shows a door that had these points added to its collider (for a single face) as boxes that were grey and would turn red if proven to be visible by ray-casting and projection. Additionally, a red rectangle indicated a region that spanned across all detected points. As can be seen in \ref{fig:labelling01}, \ref{fig:labelling02} and \ref{fig:labelling05} this approach worked reliably in cases where the door took up enough screen-space to show multiple points horizontally. In cases where only few points were visible horizontally, as seen in \ref{fig:labelling04}, the indicated region became very thin and in some cases was only one pixel wide, even though parts of the geometry that were not covered by the indicated region were in fact visible. Figures \ref{fig:labelling05}, \ref{fig:labelling06} and \ref{fig:labelling04} were captured while increasing the distance between the camera to the door. These images illustrate a quality of this approach: as long as objects are not fully occluded, parts of them may still be visible from great distance. Due to the decrease in detail in images with the increase of distance from the camera to objects, this may not be usable for training object-recognition software though as at some point the objects may be too far away to be visually distinguishable from other objects in images.\\
+\begin{figure}[htp]
+    % preliminary
+    \sbox\twosubbox{%
+      \resizebox{14cm}{!}{%
+        \includegraphics[height=6cm]{tex/img/ch05/Labelling_W2S01a.png}%
+        \includegraphics[height=6cm]{tex/img/ch05/Labelling_W2S02a.png}%
+        \includegraphics[height=6cm]{tex/img/ch05/Labelling_W2S03.png}%
+        \includegraphics[height=6cm]{tex/img/ch05/Labelling_W2S04a.png}%
+        \includegraphics[height=6cm]{tex/img/ch05/Labelling_W2S05a.png}%
+        \includegraphics[height=6cm]{tex/img/ch05/Labelling_W2S06.png}%
+        \includegraphics[height=6cm]{tex/img/ch05/Labelling_W2S06.png}%
+      }%
+    }
+    \setlength{\twosubht}{\ht\twosubbox}
+    % typeset
+    \centering
+    \subcaptionbox{\label{fig:labelling01}}{%
+      \includegraphics[height=\twosubht]{tex/img/ch05/Labelling_W2S01a.png}%
+    }\quad
+    \subcaptionbox{\label{fig:labelling02}}{%
+      \includegraphics[height=\twosubht]{tex/img/ch05/Labelling_W2S06.png}%
+    }\quad
+    \subcaptionbox{\label{fig:labelling03}}{%
+      \includegraphics[height=\twosubht]{tex/img/ch05/Labelling_W2S03.png}%
+    }\quad
+    \subcaptionbox{\label{fig:labelling05}}{%
+      \includegraphics[height=\twosubht]{tex/img/ch05/Labelling_W2S04a.png}%
+    }\quad
+    \subcaptionbox{\label{fig:labelling06}}{%
+      \includegraphics[height=\twosubht]{tex/img/ch05/Labelling_W2S05a.png}%
+    }\quad
+    \subcaptionbox{\label{fig:labelling04}}{%
+      \includegraphics[height=\twosubht]{tex/img/ch05/Labelling_W2S02a.png}%
+    }
+    \caption{Drawing regions of the identified door from multiple perspectives}
+    \label{fig:w2s-labelling}
+\end{figure}
+A great problem with this approach proved to be its implications on performance: for each object, all of its points needed to be ray-casted for and, if not occluded, projected to the screen. The time it took to test for all objects in a scene was depending on the total amount of objects in a scene, thus the more detailed and larger a scene became, the more time was required to test which objects were visible.\\
+Another problem was determining how to create the points on colliders to test for: complex colliders, such as mesh-colliders, could have any shape and any distance from one vertex to another. Those could also have shapes that have vertices that may be occluded by faces and thus never or just rarely be visible, resulting in testing for them potentially wasting valuable computing time. Even simple shapes such as cubes and cylinders were not trivial to test for as with increasing scale of objects, the distance between vertices may grow too large to test for. This problem would require dynamically generating points on colliders, taking the shape and scale of an object into account.
 
 % ** Raycasting
-\subsubsection{Approach II: Raycasting}
-[TBD]
+\subsubsection{Approach II: Casting Rays from the Viewport}
+After using ray-casting on every object in the first approach raised performance-concerns, an alternative solution needed to be found. Ideally, a second approach should take the same time to test for visible objects on screen each time it was run and not be influenced by the total amount of objects in a scene.\\
+The second approach to identifying objects on images aimed to imitate how humans would process captured images: humans would actually exclusively look at the images presented to them as no other information would be available to them. They may not know about all the other objects in a scene not seen in an image and they would most likely not recognize distant objects in images very well due to how few pixels those would be contained in.\\
+Therefore the algorithm implemented in this approach (shown in algorithm \ref{algo:raycasting-screenspace}) scanned the scene from the active camera's perspective in a \textit{grid-like} fashion. It would take the \textit{camera} an image was taken with, the \textit{scan-resolution} that defined how many rays it would cast horizontally and vertically and the screen-resolution in pixels and then cast rays that originated from the camera's origin and went through points in screen-space, going from top to bottom and left to right (shown in Figure \ref{fig:rclabelling02}). If a cast hit a collider [of a tagged object] it would check whether the same object was already hit before and retrieve a rectangle associated with the object, or create a new rectangle for the object. This rectangle would be extended so that it would contain the screen-coordinate that was used to cast the ray. Once the algorithm finished casting rays it would return a map with rectangles describing regions on screen covered by a single object each associated with their corresponding object (seen in Figure \ref{fig:rclabelling05}). Empty rectangles (being zero pixels wide or high) were discarded, allowing to effectively skip objects that were either too far away from the camera or occluded.\\
+\begin{figure}[htp]
+    % preliminary
+    \sbox\twosubbox{%
+      \resizebox{14cm}{!}{%
+        \includegraphics[height=3cm]{tex/img/ch05/RaycastingAlgorithm01.png}%
+        \includegraphics[height=3cm]{tex/img/ch05/RaycastingAlgorithm02.png}%
+        \includegraphics[height=3cm]{tex/img/ch05/RaycastingAlgorithm03.png}%
+        \includegraphics[height=3cm]{tex/img/ch05/RaycastingAlgorithm03.png}%
+        \includegraphics[height=3cm]{tex/img/ch05/RaycastingAlgorithm03.png}%
+      }%
+    }
+    \setlength{\twosubht}{\ht\twosubbox}
+    % typeset
+    \centering
+    %\subcaptionbox{\label{fig:rclabelling01}}{%
+    %  \includegraphics[height=\twosubht]{tex/img/ch05/RaycastingAlgorithm01.png}%
+    %}\quad
+    \subcaptionbox{\label{fig:rclabelling02}}{%
+      \includegraphics[height=\twosubht]{tex/img/ch05/RaycastingAlgorithm02.png}%
+    }\quad
+    \subcaptionbox{\label{fig:rclabelling03}}{%
+      \includegraphics[height=\twosubht]{tex/img/ch05/RaycastingAlgorithm03.png}%
+    }\quad%\\
+    \subcaptionbox{\label{fig:rclabelling05}}{%
+      \includegraphics[height=\twosubht]{tex/img/ch05/RaycastingAlgorithm04.png}%
+    }\quad
+    \subcaptionbox{\label{fig:rclabelling06}}{%
+      \includegraphics[height=\twosubht]{tex/img/ch05/RaycastingAlgorithm05.png}%
+    }
+    \caption{Various stages the ray-Casting algorithm went through}
+    %\caption{Ray-Casting algorithm: division of the original image (\ref{fig:rclabelling01}) by horizontal and vertical lines (\ref{fig:rclabelling02}), detection of objects hit by rays (\ref{fig:rclabelling03}), calculating rectangles that cover objects (\ref{fig:rclabelling05}) and extending them to include neighboured area (\ref{fig:rclabelling06})}
+    \label{fig:rc-labelling}
+\end{figure}
+In practice, these rectangles usually would not fully cover objects which is why in the implementation of the algorithm, an option was added to extend the width and height of the rectangles by an adjustable factor, resulting in rectangles that fully covered objects and even included neighbouring area (like parts of the ceiling, wall and floor in Figure \ref{fig:rclabelling06}).\\
+The scan-resolution effectively determines the level of detail that should be detected at which distance and the position of its rays depend on the horizontal and vertical field of view of the camera that is used. The vertical and horizontal field of view of a given camera can be calculated using the focal-length $f$ and sensor-size $d$ (provided by Unity's \textit{physical camera} feature) and the general formula for calculation of angle of view \cite{WikipediaAngleOfView}:
+\[\alpha = 2 \arctan(\frac{d}{2f})\]
+Unity's camera will have a $36mm \times 24mm$ sensor-size and $20.78mm$ focal-length by default, resulting in a field of view of $60 \times 82$ degrees. The maximum distance between two rays being one meter from the camera can be determined by calculating the distance $m$ between any unit-vector (e.g. $v_f = (0, 0, 1)$) and the same vector with a rotation along the $y$ and $x$ axis by the scan-resolution $r$ applied to it:\\
+$\alpha = \frac{x_f}{x_r}, \beta = \frac{y_f}{y_r}$\\\\
+$v_r = $ \begin{pmatrix}$\cos(\alpha)$ & 0 & $-\sin(\alpha)$ \\ 0 & 1 & 0 \\ $\sin(\alpha)$ & 0 & $\cos(\alpha)$\end{pmatrix}
+\begin{pmatrix}1 & 0 & 0 \\ 0 & $\cos(\beta)$ & $\sin(\beta)$ \\ 0 & $-\sin(\beta)$ & $\cos(\beta)$\end{pmatrix} \begin{pmatrix}0 \\ 0 \\ 1\end{pmatrix} = \begin{pmatrix}$(-\sin(\alpha)) \cos(\beta)$ \\ $\sin(\beta)$ \\ $\cos(\alpha)$\end{pmatrix}\\\\
+$m = || v_f - v_r || = \sqrt{(\sin(\alpha) (-\cos(\beta)))^2 + \sin(\beta)^2 + \cos(\alpha)^2}$\\\\
+Using a rather rough scan-resolution of $10 \times 5$, at any distance of $n$ meters from the camera, neighbouring rays would be at most $0.866 \times n$ meters away from each other.\\
+The execution-time this algorithm needed to identify objects in images was not depending on the number of tagged objects in the scene anymore but instead depended on the time needed to perform a fixed set of ray-casts. This allowed scenes to grow in size and complexity as the number of tagged objects would not influence the labelling-process anymore. In order to run this algorithm in real-time, a maximum distance had to defined so that casting individual rays was deterministic. Also, by defining appropriate scan-resolutions, the resulting regions would not include objects that were too far away from the camera or only had small parts of them visible.\\
+
 
 %////////////////////////////////////////////////
 \subsection{AI Engineer: Capture Records}
@@ -148,6 +237,7 @@ WorldToScreen (Bounding boxes/Colliders) [TBD]
 %////////////////////////////////////////////////
 \subsection{Results}
 
+\subsubsection{Evaluation: Viewer-Application}
 %////////////////////////////////////////////////
 \section{Implementation II: Using Blender as an Offline Renderer}
 Goal: Use Blender as an offline renderer, allowing for potentially photorealistic images being generated using a raycasting engine like cycles.

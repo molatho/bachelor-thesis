@@ -1,0 +1,121 @@
+%function scanScreen(scanResolution)
+%	set stepSize to Vector(screenResolution.x / scanResolution.x, screenResolution.y / scanResolution.y);
+%	set findings to Dictionary<Taggable, Rectangle>();
+%	set rectangle to Rectangle();
+%
+%	for (x = 0; x < scanResolution.x; x++)
+%		for (y = 0; y < scanResolution.y; y++)
+%			set screenPosition to Vector(stepSize.x * x, stepSize.y * y);
+%			set ray to cam.ScreenPointToRay(screenPosition);
+%			if ray has hit
+%				if findings contains hit.collider
+%					set rectangle to findings[hit.collider];
+%				else
+%					set rectangle to Rectangle();
+%				end if
+%				if screenPosition is not contained in rectangle
+%					extend rectangle to contain screenPosition;
+%				set findings[hit.collider] to rectangle;
+%			end if
+%		end for
+%	end for
+%end function
+
+% \definecolor{bluekeywords}{rgb}{0,0,1}
+% \definecolor{greencomments}{rgb}{0,0.5,0}
+% \definecolor{redstrings}{rgb}{0.64,0.08,0.08}
+% \definecolor{xmlcomments}{rgb}{0.5,0.5,0.5}
+% \definecolor{types}{rgb}{0.17,0.57,0.68}
+
+% \lstset{language=[Sharp]C,
+% captionpos=b,
+% %numbers=left, %Nummerierung
+% %numberstyle=\tiny, % kleine Zeilennummern
+% frame=lines, % Oberhalb und unterhalb des Listings ist eine Linie
+% showspaces=false,
+% showtabs=false,
+% breaklines=true,
+% showstringspaces=false,
+% breakatwhitespace=true,
+% escapeinside={(*@}{@*)},
+% commentstyle=\color{greencomments},
+% morekeywords={abstract, event, new, struct,
+%                 as, explicit, null, switch,
+%                 base, extern, object, this,
+%                 bool, false, operator, throw,
+%                 break, finally, out, true,
+%                 byte, fixed, override, try,
+%                 case, float, params, typeof,
+%                 catch, for, private, uint,
+%                 char, foreach, protected, ulong,
+%                 checked, goto, public, unchecked,
+%                 class, if, readonly, unsafe,
+%                 const, implicit, ref, ushort,
+%                 continue, in, return, using,
+%                 decimal, int, sbyte, virtual,
+%                 default, interface, sealed, volatile,
+%                 delegate, internal, short, void,
+%                 do, is, sizeof, while,
+%                 double, lock, stackalloc,
+%                 else, long, static,
+%                 enum, namespace, string},
+% keywordstyle=\color{bluekeywords},
+% stringstyle=\color{redstrings},
+% basicstyle=\ttfamily\small,
+% }
+% \begin{lstlisting}[caption=a test for a C$^\sharp$ code, label=lst:test]
+% function scanScreen(scanResolution)
+% 	set stepSize to Vector(screenResolution.x / scanResolution.x, screenResolution.y / scanResolution.y);
+% 	set findings to Dictionary<Taggable, Rectangle>();
+% 	set rectangle to Rectangle();
+
+% 	for (x = 0; x < scanResolution.x; x++)
+% 		for (y = 0; y < scanResolution.y; y++)
+% 			set screenPosition to Vector(stepSize.x * x, stepSize.y * y);
+% 			set ray to cam.ScreenPointToRay(screenPosition);
+% 			if ray has hit
+% 				if findings contains hit.collider
+% 					set rectangle to findings[hit.collider];
+% 				else
+% 					set rectangle to Rectangle();
+% 				end if
+% 				if screenPosition is not contained in rectangle
+% 					extend rectangle to contain screenPosition;
+% 				end if
+% 				set findings[hit.collider] to rectangle;
+% 			end if
+% 		end for
+% 	end for
+% end function
+% \end{lstlisting}
+
+\begin{algorithm}[H]
+    \SetKwData{StepSize}{stepSize}\SetKwData{Findings}{findings}\SetKwData{Region}{region}\SetKwData{Ray}{ray}\SetKwData{Hit}{hit}\SetKwData{Collider}{collider}\SetKwData{ScreenPosition}{screenPosition}
+    \SetKwFunction{ScreenPointToRay}{ScreenPointToRay}\SetKwFunction{ExtendRectangle}{ExtendTo}\SetKwFunction{Vector}{Vector}\SetKwFunction{Map}{Map}\SetKwFunction{Rectangle}{Rectangle}\SetKwFunction{Contains}{Contains}\SetKwFunction{Get}{Get}\SetKwFunction{Set}{Set}\SetKwFunction{HasHit}{HasHit}\SetKwFunction{GetCollider}{GetCollider}\SetKwFunction{GetHit}{GetHit}\SetKwFunction{GetCollider}{GetCollider}\SetKwFunction{GetX}{GetX}\SetKwFunction{GetY}{GetY}
+    \SetKwInOut{Input}{input}\SetKwInOut{Output}{output}
+    \Input{Scan-resolution as $wScan$ and $hScan$, screen-resolution as $wScreen$ and $hSreen$ and the $camera$ used}
+    \Output{Findings}
+    \BlankLine
+    \StepSize $\leftarrow$ \Vector{$\dfrac{wScreen}{wScan}, \dfrac{hScreen}{hScan}$}\;
+    \Findings $\leftarrow$ \Map{} \tcc*[r]{Maps colliders to rectangles}
+    
+    \For{$x \leftarrow 0$ \KwTo $wScan + 1$} {
+        \For{$y \leftarrow 0$ \KwTo $hScan + 1$} {
+    		\ScreenPosition $\leftarrow$ \Vector{$\GetX{\StepSize} \times x$, $\GetY{\StepSize} \times y$}\;
+    		\Ray $\leftarrow$ \ScreenPointToRay{$camera$, \ScreenPosition}\;
+    		\If{\HasHit{\Ray}}{
+    		    \Collider $\leftarrow$ \GetCollider{\GetHit{\Ray}}\;
+        		\Region $\leftarrow$ \Rectangle{}\;
+    			\If { $\Contains{\Findings, \Collider}$ } { 
+    			    \Region $\leftarrow$ \Get{\Findings, \Collider}\;
+        		}
+    			\If { $not \Contains{\Region, \ScreenPosition}$} {
+    			    \ExtendRectangle{\Region, \ScreenPosition}\;
+    			}
+    			\Set{\Findings, \Collider, \Region}\;
+    		}
+    	}
+    }
+    \KwRet{\Findings}
+    \caption{Raycasting from screen-space}\label{algo:raycasting-screenspace}
+\end{algorithm}
