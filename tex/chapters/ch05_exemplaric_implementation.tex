@@ -227,6 +227,8 @@ $m = || v_f - v_r || = \sqrt{(\sin(\alpha) (-\cos(\beta)))^2 + \sin(\beta)^2 + \
 Using a rather rough scan-resolution of $10 \times 5$, at any distance of $n$ meters from the camera, neighbouring rays would be at most $0.866 \times n$ meters away from each other.\\
 The execution-time this algorithm needed to identify objects in images was not depending on the number of tagged objects in the scene anymore but instead depended on the time needed to perform a fixed set of ray-casts. This allowed scenes to grow in size and complexity as the number of tagged objects would not influence the labelling-process anymore. In order to run this algorithm in real-time, a maximum distance had to defined so that casting individual rays was deterministic. Also, by defining appropriate scan-resolutions, the resulting regions would not include objects that were too far away from the camera or only had small parts of them visible.\\
 
+\subsection{Adding Mutators}
+The concept of this thesis proposed generating sets of diverse images by utilizing mutators to alter the appearance of single entities or whole scenes. Mutators would operate on a step-by-step basis, altering the state of an entity by each step.
 
 %////////////////////////////////////////////////
 \subsection{AI Engineer: Capture Records}
