@@ -25,7 +25,7 @@ A \textit{virtual robot} is a representation of a real or fictional robot. It is
 % *** Designers
 Scenes need to be created, modeled using geometry, populated with entities and configured. \textit{Designers} set up scenes so that they can be used by \acs{AI} engineers in a production environment. They recreate existing or non-existing places by adding 3D objects and \textit{entities} to scenes. Depending on the specific use of the scene and individual objects in it, designers can add \textit{mutators} to any entities in a scene and equip them with an initial configuration. They can also add waypoints to scenes that constitute paths for robots to travel along.\\
 % *** Records
-A \textit{record} is a data-structure that contains an image and a list of labels. \textit{Labels} hold information about the region in an image that a classifier was identified at. Records may contain meta-data about images, such as the location and view-angles of the camera at the time of capturing the images. This meta-data may prove useful when reconstructing the exact position of robots from generated sets of images.
+A \textit{record} is a data-structure that contains an image and a list of labels. \textit{Labels} hold information about the region in an image that a classifier was identified at. Records may contain meta-data about images, such as the location and view-angles of the camera at the time of capturing the images. This meta-data may prove useful when reconstructing the exact position of robots from generated sets of images. The types asterisked in Figure \ref{fig:classes-record} are placeholders that are implementation-specific.
 \begin{center}
 \noindent\includegraphics[width=8cm]{tex/img/ch04/Classes_Record01.png}
 \captionof{figure}{Data-structure "Record"}
@@ -75,6 +75,19 @@ Figure \ref{fig:use-cases} summarizes these refinements and shows that most use-
 \label{fig:use-cases}
 \end{center}
 \clearpage
+
+%////////////////////////////////////////////////
+\section{Automatic Mode: Control Flow}
+\begin{wrapfigure}{l}{0.45\textwidth}
+    \begin{center}
+    \includegraphics[width=0.44\textwidth]{tex/img/ch04/ActivityDiagram_HighLevel01.png}
+    \end{center}
+    \captionof{figure}{Control Flow of the automatic mode}
+    \label{fig:control-flow}
+\end{wrapfigure}
+The abovementioned automatic mode the system can run in (shown in Figure \ref{fig:control-flow}) is used to automate the process of moving robots in scenes, capturing records and mutating scenes.\\
+When active, it will alter a scene by advancing mutation and capture records as long as the mutation-cycle has not been completed. Once the mutation-cycle is completed, the mutation will be reset. If the robot in the scene has not reached its destination yet (which may never occur when paths are loops) it will be moved and the process continues by running the mutation-cycle again.\\
+This behaviour effectively iterates through all mutations set up for a scene, applies them, captures records for each mutation and does so each time the robots is moved. The only step that is largely independent of implementation is "Reset Mutation" as it will only recover the initial state of all entities in a scene. "Alter Scene", "Capture Record" and "Move Robot" are heavily dependent on the scenario at hand or the specific implementation. For instance, "Move Robot" may either simulate movement of robots by using their physical properties and bodies or simply move them to another position instantly.
 
 %////////////////////////////////////////////////
 \section{Components}
