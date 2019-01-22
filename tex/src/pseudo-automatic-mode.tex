@@ -1,0 +1,15 @@
+\begin{algorithm}[H]
+    \SetKwData{MutationManager}{mutationManager}\SetKwData{RecordingManager}{recordingManager}\SetKwData{RobotController}{robotController}
+    \SetKwFunction{AlterScene}{AlterScene}\SetKwFunction{CaptureRecord}{CaptureRecord}\SetKwFunction{MutationCompleted}{MutationCompleted}\SetKwFunction{ResetScene}{ResetScene}\SetKwFunction{Move}{Move}\SetKwFunction{DestinationReached}{DestinationReached}
+    
+    \Repeat{not \DestinationReached{\RobotController}}{
+        \Repeat{not \MutationCompleted{\MutationManager}}{
+            \AlterScene{\MutationManager}\;
+            \CaptureRecord{\RecordingManager}\;
+        }
+        \ResetScene{\MutationManager}\;
+        \Move{\RobotController}\;
+    }
+    
+    \caption{Fully Automatic Mode}\label{algo:automatic-mode}
+\end{algorithm}
