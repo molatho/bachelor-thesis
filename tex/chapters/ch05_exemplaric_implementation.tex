@@ -13,7 +13,7 @@ This implementation of the concept had the working title "VERE" ("Virtual Enviro
 Making use of game engines to implement the concept was based on the observation that video games have always striven after improved visual presentation and more intuitive user interaction in order to attract customers, leading to the general availability of game engines that feature impressive graphical detail (as demonstrated in figure \ref{fig:unity-demo-graphics}), intuitive methods to interact with users and great performance on modern computer systems. Their ability to produce realistic images in real-time made them an attractive alternative to traditional offline renderers.
 \begin{center}
 \noindent\includegraphics[width=14cm]{tex/img/ch05/UnityGraphicsDemo.png}
-\captionof{figure}{Unity Technology's "Book of the Dead" teaser video\cite{UnityDemoRealtimeTeaser}}
+\captionof{figure}{Unity Technology's "Book of the Dead" promotional video video\cite{UnityDemoRealtimeTeaser}}
 \label{fig:unity-demo-graphics}
 \end{center}
 
@@ -227,9 +227,9 @@ Figure \ref{fig:mutated-door} illustrates how doors had been affected by the mut
 Similar mutators were implemented for ceiling lights (altering the intensity and range of lights), ambient light (mutating intensity and color) and the sun (altering color, intensity and orientation).
 
 %////////////////////////////////////////////////
-\subsection{Robots [TBD]}
+\subsection{Adding Robots to the Scene}
 \subsubsection{Importing Robots}
-Once the scene was set up, a robot was needed for \acs{AI} engineers to navigate around the scene and capture records. For this implementation the robot model "Pioneer 3AT" was chosen as the Institute of Robotics of University of Applied Sciences Mannheim works with "Pioneer"-robots and there were \ac{URDF} files of it available \cite{AmrRosConfig} online.\\
+Once the scene is set up, a robot is needed for \acs{AI} engineers to navigate around the scene and capture records. For this implementation the robot model "Pioneer 3AT" was chosen as the Institute of Robotics of University of Applied Sciences Mannheim works with "Pioneer"-robots and there were \ac{URDF} files of it available \cite{AmrRosConfig} online.\\
 There were few libraries that provide methods to import robots using URDF-files into Unity, an extensive one was \textit{"ROS\#"} which was developed by Siemens AG. It was described as "a set of open source software libraries and tools in C\# for communicating with ROS from .NET applications, in particular Unity3D" \cite{RosSharp}. This project implemented connecting to ROS instances, ROS' publish/subscribe pattern and importing robots into Unity scenes, however its software design introduced some potential problems: 
 \begin{enumerate}
     \item Importing robots using URDF-files was done by downloading URDF-files from running ROS-instances. The need for a running ROS-instance would add to VERE's system requirements.
@@ -244,16 +244,35 @@ To solve these problems, a library for parsing URDF-files, \textit{"URDFParser.N
 \label{fig:filesystem}
 \end{center}
 Contrary to ROS\#'s approach of interpreting hard-coded XML-elements, in URDFParser.NET parsing the URDF-files was implemented by defining \acp{DTO} for the different URDF-elements. URDF-Files could then be deserialized using these \acsp{DTO} with the \textit{"XmlSerializer"}-class provided by the .NET-Framework \cite{XmlSerializer}.\\
-The third problem with ROS\#'s implementation, faulty behaviour of physical bodies, required manual adjustments to the imported robot models: rearranging the robots' hierarchy so at all times a physical object may have only one physical child object solved robots' inability to move. Ensuring that colliders of physical parts (such as wheels and chassis) did not intersect with each other eliminated the problem of robots spontaneously launching into the air. 
+The third problem with ROS\#'s implementation, faulty behaviour of physical bodies (also called \textit{"rigid bodies"} in the Unity Engine), required manual adjustments to the imported robot models: rearranging the robots' hierarchy so at all times a physical object may have only one physical child object solved robots' inability to move. Ensuring that colliders of physical parts (such as wheels and chassis) did not intersect with each other eliminated the problem of robots spontaneously launching into the air. 
 
 \subsubsection{Controlling Robots}
+Robots imported into Unity needed to be controllable by \ac{AI} engineers. This could be done in different ways. with some of those depending on the type of drive a specific robot featured:
+\begin{description}
+    \item [Wheel Drives] Robots may feature wheel-joints that can rotate on their local $x$ and $y$ axis. Rotating a wheel's $y$ axis allows to use it for steering while applying torque to its $x$ axis would move it and its connected bodies across surfaces, just like real-world wheels work. This technique can be used for most wheeled robots by limiting rotation of the $y$ axis to wheels that should not steer (e.g. the rear wheels of motor cycles).
+    \item [Connected Limbs] Limbs of robots can be connected using hinge joints that allow rotating connected bodies along one or more axis. Most industrialized robots feature three or more controllable axis and could be implemented in Unity by connecting two limbs via one hinge-joint each, allowing movement in one axis. Industrialized robots operate from a fixed position in 3D space.
+    \item [Legged Movement] Extending on the techniques used for implementing industrialized robots, one can combine multiple limbs to a body and move these limbs via hinge joints to simulate legged robots. The major difference from industrialized robots is that legged robots do not reside in a fixed position but move their bodies in 3D space.
+\end{description}
+While simulating wheel drives, connected limbs and legged movement is possible in Unity Engine and other engines, they come at the cost of complex configuration and intensive testing. An alternative to physical simulation is by simply fabricating the illusion of such, presuming that the scenario at hand does not require exact simulation of movement but allows for fabricated approximations:
+\begin{itemize}
+    \item Wheel drives can be reconstructed by wheel joints that allow for rotation in the $x$ and $y$ axis, however they do not require force directly applied to them for rotation . Applying directed force at a robot's body for acceleration and deceleration and applying torque force for turning would indirectly affect the wheels and thus fabricate the illusion of real wheel drives. 
+    \item Connected limbs can be imitated by creating a parent-child hierarchy for each connected limb. Making use of Unity's transforms, child limbs of parent limbs will directly be affected by any change to the parent's transform: for instance, rotating the base limb of a robot arm would also effectively move all of its child limbs with it.
+    \item Legged movement would be the hardest do fabricate in a way that behaves realistic. Most game engines feature animation systems that allows for replaying, looping and blending animations of complex body parts, resulting in movement that looks realistic. However it would not necessarily behave realistically as individual legs colliding with obstacles could lead to the whole body being moved, ignoring the friction of the other legs of a robot that may have contact to a surface and thus restrict movement of the robot's body.
+\end{itemize}
 
-%////////////////////////////////////////////////
-\subsection{AI Engineer: Capture Records}
-\subsubsection{Controlling the Robot}
+Figure \ref{fig:pioneer3at} shows a "Pioneer 3AT" robot imported into Unity. The green cylinders represent the colliders of its wheels and it lacks any other colliders. Its only rigid body that had any mass and was simulated for gravity was its chassis. This combination of a single rigid body and one cylindrical collider for each wheel enabled the robot to appear and behave close to a real robot in the scene as neither collision with its chassis nor mass of its wheels were necessary for maneuvering it in the scene. Its wheels would turn upon force that is applied to its rigid body.
 
-\subsubsection{Controlling the Robot}
+\begin{center}
+    \includegraphics[width=0.39\textwidth]{tex/img/ch05/Pioneer3AT.png}
+    \captionof{figure}{A "Pioneer 3AT" robot imported into Unity}
+    \label{fig:pioneer3at}
+\end{center}
 
+Unity unifies input of various different input devices by providing an extendable set of values that either buttons and axis of one or multiple input devices can be mapped to. In its default configuration, Unity maps input for movement from both digital inputs like keyboards and analog inputs like joysticks to two axis, one for horizontal and one for vertical movement. As a result, pressing the "A" or "Arrow Up" buttons on a keyboard and pushing a joystick into the positive direction of its $y$ axis would affect the vertical input axis. In scripts, this could then be accessed by a simple call to $Input.GetAxis("vertical")$ which would return a value in the interval $[-1, 1]$ where positive values indicated a movement forwards and negative values indicated a movement backwards. Analogue to this, negative values of the horizontal axis would indicate movement to the left and positive values would indicate movement to the right.\\
+In VERE, the vertical axis for forwards and backwards movement was used to apply either a positive or negative force to the robot's body in its forward direction which would make it accelerate and decelerate. The horizontal axis was used to apply a torque force to its body, allowing it to steer. Due to the mass of the robot the applied torque force was not sufficient to move it while it was standing still, however it was strong enough to apply slight steering to the robot while it was driving, which in turn appeared realistic.
+
+
+\clearpage
 %////////////////////////////////////////////////
 \subsection{Results}
 
