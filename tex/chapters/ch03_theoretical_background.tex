@@ -29,10 +29,20 @@ Figure \ref{fig:lenet5} shows the architecture of LeNet5 by LeCun \textit{et al.
 \end{center}
 
 \subsection{Data Augmentation}
-In summary it can be stated that \ac{conv} layers are trained to detect features and \ac{fc} layers are trained to detect relations between features that indicate specific classifiers. To achieve this, \acp{CNN} need to be trained with datasets specific to their application that must be of good quality. Factors contributing to the quality of datasets are the quality of their images (e.g. high resolution, little noise) and labels (e.g. number of classes, general presence of regions associated with labels). However large sets of such data may be hard to come by due to scarce availability (e.g. of datasets for highly specialized applications) or the amount of effort creating those takes. Lastly, they may simple cost a lot of time to produce.\\
+In summary it can be stated that \ac{conv} layers are trained to detect features and \ac{fc} layers are trained to detect relations between features that indicate specific classifiers. To achieve this, \acp{CNN} need to be trained with datasets specific to their application that must be of good quality \cite{Schweitzer2017}. Factors contributing to the quality of datasets are the quality of their images (e.g. high resolution, little noise) and labels (e.g. number of classes, general presence of regions associated with labels). However large sets of such data may be hard to come by due to scarce availability (e.g. of datasets for highly specialized applications) or the amount of effort creating those takes. Lastly, they may simple cost a lot of time to produce.\\
 \textit{Data Augmentation} promises to solve this problem by altering datasets through application of various operations on them: for instance images can be stretched, mirrored, zoomed and rotated or color filters can be applied to them. As long as these changes are transferred to the labels of images, these altered datasets drastically increase the size of datasets that can be used for training \acp{CNN}. This can also potentially help to make detections more reliable for special cases: for instance, datasets that feature cars would mostly show cars in their surroundings, hence they would rarely be cut off in images. Altering images so they cut off parts of cars like wheels may enable \acp{CNN} to recognize cars without requiring cars to actually have wheels.
 
 \section{3D Graphics}
+\subsection{Transforms}
+As this chapter is about 3D graphics, this section will handle exclusively 3D transforms. In computer graphics, all locatable objects in 2D or 3D space use transforms to express their location, rotation and scale. Those attributes can be expressed in vectors with three elements each, where each of these elements represents the effect of a transformation for one axis. A complete transformation with a location $l$, rotation $r$ and scale $s$ for an object could be written as:
+\begin{center}$l = \begin{pmatrix} 0\\0\\0\end{pmatrix}, r = \begin{pmatrix} 0\\90\\0\end{pmatrix},  s = \begin{pmatrix} 1\\1\\1\end{pmatrix}$\end{center}
+This describes an object that is located at the center of the coordinate system, is rotated around the y axis by $90$ degrees and has the default scale of $1$ applied to all axis.
+\cite{10.1007/978-1-4471-6290-2}
+\subsubsection{Operators}
+\paragraph{Translation}
+\paragraph{Scaling}
+\paragraph{Rotation}
+
 
 Transformations (world-space, local-space), Projections (screen-space)
 
