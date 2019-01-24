@@ -10,19 +10,30 @@
 \chapter{Theoretical Background}
 
 % //////////////////////////////////////////////////
-\section{Object Recognition using Convolutional Networks}
+\section{Object Recognition using Convolutional Neural Networks}
 Everyday tasks performed by humans require exact recognition and categorization of objects in order to perform actions like manipulating objects. 
 % Beispiele, konkreter
-These skills can further be used to deduce an understanding of one's surroundings and effectively grasp the context one acts in. While these tasks are easily performed by humans, programming software that implements object-recognition is hard as object-recognition is complex [TBD].\\
-Convolutional Networks combine three ideas: [TBD]
-% Blackbox: input, ???, output
-% Whitebox: rough explanation
+These skills can further be used to deduce an understanding of one's surroundings and effectively grasp the context one acts in. These tasks are easily and for the most part subconsciously performed by humans but prove to be a challenge for software.\\
+\acp{CNN} are a type of \acp{ANN} that operate on high-dimensional input data. This includes regular images in raster formats as their pixels are organized in rows and columns and color channels resulting in a three-dimensional input volume. These networks consist of multiple layers: the first layers will prepare the input data for later use (e.g. by performing scaling down the input data).\\
+Next, \ac{conv} layers further process the input data. They have a set of learn-able filters that perform convolutions on small chunks, that extend through the full depth of the input volume \cite{Schweitzer2017}, along the input data (e.g. by sliding through images row-by-row and column-by-column) where they process local pixel data depending on their implementation and the size of their receptive field. For instance, by performing edge-detection (using e.g. the Prewitt, Roberts or Sobel operators \cite{5557884}), filters may uncover features. Each of these filters will output a two-dimensional activation map that contains their responses at every position of the input data \cite{cs231n}. Stacking these activation maps yields a three-dimensional output volume.\\
+The output of \ac{conv} layers is a linear function. In order to solve real-world problem that are non-linear, non-linear layers are applied to the output of \ac{conv} layers. In simplified terms, those layers map the data from an input volume to a specified, non-linear range of values (e.g. from 0 to 1). There are various non-linear functions that can be used, a popular one is the \ac{ReLU} which maps negative values and keeps positive values. It is simple to implement and does not involve expensive computations.\\ %Drawbacks?
+Pooling layers are used to reduce the size of the input data by applying filters to it. There are various methods that can be used, such as the average-pooling that chooses the average value of inputs. By reducing the size of inputs, pooling layers effectively reduce the complexity and number of weights in following layers, hence processing by following layers require less computational effort. Chaining layers by using the output of the last layer as an input for the next layer allows detect more complex features as the filters of the next layers would be trained using refined data.\\
+Lastly, the last layer of a \ac{CNN} will be a fully connected layers. Those translate an input volume to a set of $n$ values where each value represents one class the network can choose. Each of these values would represent the probability of its class. This translation is done by learning from the input volume which is a stack of activation maps of complex features. Certain combinations of high values in those maps will indicate specific classes like the detection of a long body with multiple wheels on a flat ground may be interpreted as a vehicle.
+
+\begin{center}
+\noindent\includegraphics[width=10cm]{tex/img/ch03/LeNet.png}
+\captionof{figure}{UV-map of a cube on top of a texture (l) and the same texture being applied to a cube (r) using the same UV-map where the face showing a "1" is highlighted.}
+\label{fig:3d-cube-uv-mapping}
+\end{center}
 
 \subsection{Data Augmentation}
 % "Distortion"
 [TBD]
 
 \section{3D Graphics}
+
+Transformations (world-space, local-space), Projections (screen-space)
+
 \paragraph{Meshes} \textit{Vertices} are data-structures that hold information about points in 3D space (\ref{fig:3d-vertices}). Depending on the application, vertices can hold additional information, e.g. color and reflectance. Vertices can be connected to each other via \textit{edges} (\ref{fig:3d-edges}). \textit{Faces} are planar surfaces defined by a set of usually three (polygon) or four (quad) edges (\ref{fig:3d-face}). Vectors that are perpendicular to faces are called \textit{normals} and are often used in rendering, for instance to calculate light-reflections on surfaces). A \textit{mesh} is an individual set of vertices, edges and faces (\ref{fig:3d-mesh}). 
 % Meshes: Warum? Annäherung an die Realität, nur Körper (nur 3D, keine Textur), Uses
 
@@ -62,7 +73,7 @@ Mapping textures to meshes requires a \textit{UV-map}
 
 \subsection{Rendering}
 Raytracing \cite{Plemenos2010} vs Rasterization [TBD]
-Post-Processing [TBD]
+Post-Processing: ambient occlusion, anti-aliasing, depth-of-field, high dynamic range, shading [TBD]
 
 %- Definition
    %- Techniques
@@ -82,3 +93,4 @@ Definition, Overview, Concepts (Entity Component System, Asset Bundles) [TBD]
 
 % //////////////////////////////////////////////////
 \section{Unified Robot Description Format}
+\ac{URDF}
