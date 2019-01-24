@@ -1,15 +1,14 @@
-\chapter{Exemplaric Implementation}
+\chapter{Exemplaric Implementation Using Game Engines as Renderers and Frontends}
 \label{chap:implementations}
 
 %////////////////////////////////////////////////
-\section{Implementation I: Using Game Engines as Renderers and Frontends}
-\subsection{Goals and Constraints of the Implementation}
+\section{Goals and Constraints of the Implementation}
 \label{section:goals-and-constraints}
 Inspired by a thesis written by Schweitzer in 2017 that approached using \acsp{CNN} that detect doors on autonomous robots \cite{Schweitzer2017}, the goal of this thesis' implementation became to generate records that could be used to train \acsp{CNN} that detect doors.\\ 
 The environment chosen for this implementation was the second floor of building "A" of University of Applied Sciences Mannheim as this building houses the Faculty of Computer Science and the Institute of Robotics is located in the second floor.\\
 This implementation of the concept had the working title "VERE" ("Virtual Environments for Robotics Experiments"). While it produced records that could be used to train \acsp{CNN}, no such tests were performed due to time-constraints.
 
-\subsection{Why to Use Game Engines}
+\section{Using Game Engines}
 Making use of game engines to implement the concept was based on the observation that video games have always striven after improved visual presentation and more intuitive user interaction in order to attract customers, leading to the general availability of game engines that feature impressive graphical detail (as demonstrated in figure \ref{fig:unity-demo-graphics}), intuitive methods to interact with users and great performance on modern computer systems. Their ability to produce realistic images in real-time made them an attractive alternative to traditional offline renderers.
 \begin{center}
 \noindent\includegraphics[width=14cm]{tex/img/ch05/UnityGraphicsDemo.png}
@@ -25,7 +24,7 @@ New rendering-technologies that improve the quality of rendered images and perfo
 \end{center}
 
 %////////////////////////////////////////////////
-\subsubsection{Choosing a Game Engine}
+\subsection{Choosing a Game Engine}
 The decision which game engine to use to implement the concept was based on a set of factors that needed to be considered:
 \begin{description}
 \item [Stability] While the goal of using game engines as real-time renderers is to generate records quickly, recording sessions may take several hours. The software needs to maintain stable operation because recording sessions may run un-supervised and crashes may be detected only hours later.
@@ -46,8 +45,8 @@ After evaluating modern and popular game engines considering the abovementioned 
 \end{center}
 
 %////////////////////////////////////////////////
-\subsection{Designer: Building the Scene}
-\subsubsection{Rebuilding a real environment}
+\section{Designer: Building the Scene}
+\subsection{Rebuilding a real environment}
 As stated in \ref{section:goals-and-constraints} the environment used to base the scene on was the second floor of building "A" of University of Applied Sciences Mannheim. However at this time no 3D model of the floor, let alone the building existed so it had to be handcrafted using the resources that were available: a floor plan (shown in Figure \ref{fig:floor-plan-image}) and measurements taken by hand.
 \newlength{\twosubht}
 \newsavebox{\twosubbox}
@@ -102,17 +101,79 @@ Figure \ref{fig:floor-plan-blender} shows the reconstruction of the basic layout
 The reconstructed doors could now be used to render very detailed door meshes with realistic surfaces. However other objects also had to be reconstructed: as lighting would have great influence on generated images, large window facades that cover the building's exterior and feature blinds were added to the scene. A set of other common objects present in the floor like lamps and air-conditioning pipes on the ceiling, radiators and tables were also reconstructed.\\Figure \ref{fig:unity-scene-a205} shows the final reconstruction of room \textit{"A205"} which is the first room on the second floor of the building. It features windows with blinds that cast shadows on the walls and objects and it features obstacles (such as tables) that may occlude other objects of interest such as the blue door. The reconstructed room does not feature any chairs, even though there were chairs present in the real room. They were left out to enable robots to navigate through the room easily without having to take care of maneuvering in tight spaces between chairs. However chairs would have contributed to making the room appear more realistic as chairs may have occluded objects of interest and added to the complexity and variety of the scene overall.
 
 \begin{center}
-\noindent\includegraphics[width=14cm]{tex/img/ch05/UnitySceneA205_02.png}
+\noindent\includegraphics[width=12cm]{tex/img/ch05/UnitySceneA205_02.png}
 \captionof{figure}{Reconstruction of room A205 in Unity Editor}
 \label{fig:unity-scene-a205}
 \end{center}
 
 %////////////////////////////////////////////////
-\subsection{Identifying Classifiers}
+\subsection{Adding Robots to the Scene}
+\subsubsection{Importing Robots}
+Once the scene is set up, a robot is needed for \acs{AI} engineers to navigate around the scene and capture records. For this implementation the robot model "Pioneer 3AT" was chosen as the Institute of Robotics of University of Applied Sciences Mannheim works with "Pioneer"-robots and there were \ac{URDF} files of it available \cite{AmrRosConfig} online.\\
+There were few libraries that provide methods to import robots using URDF-files into Unity, an extensive one was \textit{"ROS\#"} which was developed by Siemens AG. It was described as "a set of open source software libraries and tools in C\# for communicating with ROS from .NET applications, in particular Unity3D" \cite{RosSharp}. This project implemented connecting to ROS instances, ROS' publish/subscribe pattern and importing robots into Unity scenes, however its software design introduced some potential problems: 
+\begin{enumerate}
+    \item Importing robots using URDF-files was done by downloading URDF-files from running ROS-instances. The need for a running ROS-instance would add to VERE's system requirements.
+    %ros-sharp/Unity3D/Assets/RosSharp/Scripts/Urdf/Editor/UrdfComponents/UrdfRobotExtensions.cs
+    \item ROS\#'s URDF importing component required the URDF files to be present in the "Asset" folder of Unity projects. This meant that URDF files downloaded from remote locations needed to be written to disk and compressed archives that contained additional files like meshes and textures needed to be extracted to disk first.
+    \item Even though robots imported by ROS\# had correct hierarchy of body parts and correct physical properties (as defined in the robots' URDF), Unity's physics engine often times failed to simulate physics at run-time, leading to robots being unable to move, falling through floors or being propelled into the air.
+\end{enumerate}
+To solve these problems, a library for parsing URDF-files, \textit{"URDFParser.NET"}, was implemented. The first two problems were solved by implementing a set of interfaces that represent filesystems, directories and files (\ref{fig:filesystem}) for local filesystems and ZIP-archives (using the open-source library \textit{"DotNetZip"} \cite{DotNetZip}) as URDF-files including meshes and textures were usually distributed as ZIP-archives. These interfaces could also be implemented to read files from remote locations such as FTP-servers or websites for future scenarios and use-cases.
+\begin{center}
+\noindent\includegraphics[width=14cm]{tex/img/ch05/URDFParser_FileSystemInterfaces04.png}
+\captionof{figure}{Interfaces for filesystems, directories and files}
+\label{fig:filesystem}
+\end{center}
+Contrary to ROS\#'s approach of interpreting hard-coded XML-elements, in URDFParser.NET parsing the URDF-files was implemented by defining \acp{DTO} for the different URDF-elements. URDF-Files could then be deserialized using these \acsp{DTO} with the \textit{"XmlSerializer"}-class provided by the .NET-Framework \cite{XmlSerializer}.\\
+The third problem with ROS\#'s implementation, faulty behaviour of physical bodies (also called \textit{"rigid bodies"} in the Unity Engine), required manual adjustments to the imported robot models: rearranging the robots' hierarchy so at all times a physical object may have only one physical child object solved robots' inability to move. Ensuring that colliders of physical parts (such as wheels and chassis) did not intersect with each other eliminated the problem of robots spontaneously launching into the air. 
+
+\subsubsection{Controlling Robots}
+Robots imported into Unity needed to be controllable by \ac{AI} engineers. This could be done in different ways. with some of those depending on the type of drive a specific robot featured:
+\begin{description}
+    \item [Wheel Drives] Robots may feature wheel-joints that can rotate on their local $x$ and $y$ axis. Rotating a wheel's $y$ axis allows to use it for steering while applying torque to its $x$ axis would move it and its connected bodies across surfaces, just like real-world wheels work. This technique can be used for most wheeled robots by limiting rotation of the $y$ axis to wheels that should not steer (e.g. the rear wheels of motor cycles).
+    \item [Connected Limbs] Limbs of robots can be connected using hinge joints that allow rotating connected bodies along one or more axis. Most industrialized robots feature three or more controllable axis and could be implemented in Unity by connecting two limbs via one hinge-joint each, allowing movement in one axis. Industrialized robots operate from a fixed position in 3D space.
+    \item [Legged Movement] Extending on the techniques used for implementing industrialized robots, one can combine multiple limbs to a body and move these limbs via hinge joints to simulate legged robots. The major difference from industrialized robots is that legged robots do not reside in a fixed position but move their bodies in 3D space.
+\end{description}
+While simulating wheel drives, connected limbs and legged movement is possible in Unity Engine and other engines, they come at the cost of complex configuration and intensive testing. An alternative to physical simulation is by simply fabricating the illusion of such, presuming that the scenario at hand does not require exact simulation of movement but allows for fabricated approximations:
+\begin{itemize}
+    \item Wheel drives can be reconstructed by wheel joints that allow for rotation in the $x$ and $y$ axis, however they do not require force directly applied to them for rotation . Applying directed force at a robot's body for acceleration and deceleration and applying torque force for turning would indirectly affect the wheels and thus fabricate the illusion of real wheel drives. 
+    \item Connected limbs can be imitated by creating a parent-child hierarchy for each connected limb. Making use of Unity's transforms, child limbs of parent limbs will directly be affected by any change to the parent's transform: for instance, rotating the base limb of a robot arm would also effectively move all of its child limbs with it.
+    \item Legged movement would be the hardest do fabricate in a way that behaves realistic. Most game engines feature animation systems that allows for replaying, looping and blending animations of complex body parts, resulting in movement that looks realistic. However it would not necessarily behave realistically as individual legs colliding with obstacles could lead to the whole body being moved, ignoring the friction of the other legs of a robot that may have contact to a surface and thus restrict movement of the robot's body.
+\end{itemize}
+
+Figure \ref{fig:pioneer3at} shows a "Pioneer 3AT" robot imported into Unity. The green cylinders represent the colliders of its wheels and it lacks any other colliders. Its only rigid body that had any mass and was simulated for gravity was its chassis. This combination of a single rigid body and one cylindrical collider for each wheel enabled the robot to appear and behave close to a real robot in the scene as neither collision with its chassis nor mass of its wheels were necessary for maneuvering it in the scene. Its wheels would turn upon force that is applied to its rigid body.
+
+\begin{center}
+    \includegraphics[width=0.39\textwidth]{tex/img/ch05/Pioneer3AT.png}
+    \captionof{figure}{A "Pioneer 3AT" robot imported into Unity}
+    \label{fig:pioneer3at}
+\end{center}
+
+Unity unifies input of various different input devices by providing an extendable set of values that either buttons and axis of one or multiple input devices can be mapped to. In its default configuration, Unity maps input for movement from both digital inputs like keyboards and analog inputs like joysticks to two axis, one for horizontal and one for vertical movement. As a result, pressing the "A" or "Arrow Up" buttons on a keyboard and pushing a joystick into the positive direction of its $y$ axis would affect the vertical input axis. In scripts, this could then be accessed by a simple call to $Input.GetAxis("vertical")$ which would return a value in the interval $[-1, 1]$ where positive values indicated a movement forwards and negative values indicated a movement backwards. Analogue to this, negative values of the horizontal axis would indicate movement to the left and positive values would indicate movement to the right.\\
+In VERE, the vertical axis for forwards and backwards movement was used to apply either a positive or negative force to the robot's body in its forward direction which would make it accelerate and decelerate. The horizontal axis was used to apply a torque force to its body, allowing it to steer. Due to the mass of the robot the applied torque force was not sufficient to move it while it was standing still, however it was strong enough to apply slight steering to the robot while it was driving, which in turn appeared realistic.
+
+%////////////////////////////////////////////////
+\section{Implementing Mutators}
+The concept of this thesis proposed generating sets of diverse images by utilizing mutators to alter the appearance of single entities or whole scenes. Mutators would operate on a step-by-step basis, altering the state of an entity by each step. In this implementation, mutators would implement a simple interface \textit{IMutator} that provided methods to advance and reset itself. Three implementations of this interface were used to simplify the use of this interface for various applications: 
+\begin{description}
+\item [RangeMutator] Most attributes that were to be altered had numerical values that had to be incremented or decremented each step. \textit{RangeMutators} would have a \textit{FloatRange} associated to them that defined a value-range and step-size. These mutators could perform mutations on a single attribute of a single object using a value within the specified range of values and incremented or decremented this value using the specified step-size. RangeMutators would be used to manipulate most numeric values like light-intensity, the angles that doors were opened by and the orientation of the sun. The number of steps $s$ needed to complete one cycle of this mutator is $|\frac{maximum-minimum}{stepSize}|$ where $maximum$, $minimum$ and $stepSize$ are specified by a RangeMutator's FloatRange.
+\item [MultiMutator] A single entity could hold many mutators and in order to group them and make them easily accessible to the MutationManager, those mutators would be added to and effectively encapsulated by \textit{MultiMutators}. Those would advance mutators in a serial fashion: it advanced the first child-mutator until the cycle of this child-mutator was completed. Then it would advance the second child-mutator by one step, reset the first one and continue advancing the first child-mutator again. The number of steps a MultiMutator needed to complete a cycle was directly dependent on the mutators it grouped. Given the set of its mutators $m$ a MultiMutator needed $\prod_{i=1}^{|m|} S(m_i)$ steps to complete a cycle, where $S(x)$ returns the number of steps a mutator $x$ needed to complete a cycle.
+\item [ParallelMutator] There were cases where single mutators did not have great influence on scenes or did not have to have a whole mutation-step in a scene dedicated to them. For instance in this implementation, lamps in room A205 were mutated in parallel by using a ParallelMutator. These mutators would group other mutators like MultiMutators did, however upon mutation it would advance all of its mutators at the same time. Mutators that finished their current cycle were skipped. The number steps a ParallelMutator needed to complete a cycle was the number of steps the slowest of its mutators took to complete a cycle. ParallelMutators may have mutators of varying cycle lengths resulting in steps that few or only one of its mutators were advanced at.
+\end{description}
+Figure \ref{fig:classdiagram-mutators} shows the abovementioned mutators and a set of mutators that were implemented specifically to alter doors. Doors had a \textit{DoorMutator} associated to them which was a MultiMutator that encapsulated five other mutators. Four of them, \textit{DoorMaterialColorMutator}, \textit{DoorMetallicMutator}, \textit{DoorNormalMutator} and \textit{Door-SmoothnessMutator}, altered the color, "metallic" property, intensity of normal maps and "smoothness" property of a door's surface, respectively. \textit{DoorAngleMutator} changed the angle at which a door was opened.\\
+Figure \ref{fig:mutated-door} illustrates how doors had been affected by the mutators. The most-right images demonstrates a case of a poorly configured mutator: the "metallic" property that controls how light is reflected on surfaces, was altered to a value that results in unrealistic appearance.
+\begin{center}
+\noindent\includegraphics[width=10cm]{tex/img/ch05/Results_Door.png}
+\captionof{figure}{A door that shows mutated opening angle, color, light-reflection, normal-map and smoothness}
+\label{fig:mutated-door}
+\end{center}
+Similar mutators were implemented for ceiling lights (altering the intensity and range of lights), ambient light (mutating intensity and color) and the sun (altering color, intensity and orientation).
+
+%////////////////////////////////////////////////
+\section{Identifying Classifiers}
 Proper identification of objects in captured images proved to be a non-trivial problem and the solution to this problem used in VERE took multiple approaches until a satisfying solution was found.\\
 In order to specify which objects were of interest and shall be identified in captured images, a "Taggable"-component, that had a "Label Name"-attribute that would be treated as a classifier, was implemented and added each relevant object in a scene. The next sections will present the working principles of selected approaches that were implemented and tested and their qualities and drawbacks.
 
-\subsubsection{Approach I: Using Projection and Raycasting}
+\subsection{Approach I: Using Projection and Raycasting}
 The first approach to identifying which objects were visible from a given camera's perspective was to try to cast rays to each "tagged" object and, if hit, project its position from world space into the screen space of the camera. If an object was not hit, it would be occluded by other objects, if the projection from world- to screen space could not be made, the object would not be in the camera's field-of-view and thus not be visible. Cameras in the Unity Engine provide the \textit{"WorldToScreenPoint"} \cite{UnityDocsCamera} method that performs the projection from world space to screen space.\\
 Objects in the Unity Engine have \textit{Transforms} that specify location, rotation and scale. These do not translate to colliders of objects though and can not directly be used to determine if an object is hit by a raycast or not as an object may have no colliders that cover its origin: for instance a tire may have its origin at its center so a ray-cast to its origin would not necessarily hit any of its colliders. Therefore, the projection approach needed to consider objects' colliders. A solution to this was to define a set of points to test for along the edges and on the surfaces of colliders: an algorithm would create a point for each vertex of a collider and add a configurable amount of points along edges and surfaces. Each point of these sets could then be tested for using ray-casting and projection.\\
 Figure \ref{fig:w2s-labelling} shows a door that had these points added to its collider (for a single face) as boxes that were grey and would turn red if proven to be visible by ray-casting and projection. Additionally, a red rectangle indicated a region that spanned across all detected points. As can be seen in \ref{fig:labelling01}, \ref{fig:labelling02} and \ref{fig:labelling05} this approach worked reliably in cases where the door took up enough screen space to show multiple points horizontally. In cases where only few points were visible horizontally, as seen in \ref{fig:labelling04}, the indicated region became very thin and in some cases was only one pixel wide, even though parts of the geometry that were not covered by the indicated region were in fact visible. Figures \ref{fig:labelling05}, \ref{fig:labelling06} and \ref{fig:labelling04} were captured while increasing the distance between the camera and the door. These images illustrate a quality of this approach: as long as objects are not fully occluded, parts of them may still be visible from great distance. Due to the decrease in detail in images with the increase of distance from the camera to objects, this may not be usable for training object-recognition software though: distant objects may accommodate for few, if any, pixels in an image and thus be nearly indistinguishable other objects or become hard to identify. This could be solved by limiting the range of rays.\\
@@ -159,7 +220,7 @@ Another problem was determining how to create the points on colliders to test fo
 Solving this problem would require dynamically generating points on colliders, taking the shape and scale of an object into account.
 
 % ** Raycasting
-\subsubsection{Approach II: Casting Rays from screen space}
+\subsection{Approach II: Casting Rays from screen space}
 After using ray-casting on every object in the first approach raised performance-concerns, an alternative solution needed to be found. Ideally, a second approach should take the same time to test for visible objects on screen each time it was run and not be influenced by the total amount of objects in a scene.\\
 The second approach to identifying objects on images aimed to imitate how humans would process captured images: humans would actually exclusively look at the images presented to them as no other information would be available to them. They may not know about all the other objects in a scene that are not visible in an image and they would most likely not recognize distant objects in images very well due to how few pixels would accommodate for them.\\
 Therefore the algorithm implemented in this approach (shown in algorithm \ref{algo:raycasting-screenspace}) scanned the scene from the active camera's perspective in a grid-like fashion. It would use the camera an image was taken with, the \textit{scan-resolution} that defined how many rays it would cast horizontally and vertically and the screen-resolution in pixels and then cast rays that originated from the camera's origin and went through points in screen space, going from top to bottom and left to right (shown in Figure \ref{fig:rclabelling02}). If a cast hit a collider [of a tagged object] it would check whether the same object was already hit before and retrieve a rectangle associated with the object, or create a new rectangle for the object. This rectangle would be extended so that it would contain the screen-coordinate that was used to cast the ray. Once the algorithm finished casting rays it would return a map with rectangles describing regions on screen covered by a single object each associated with their corresponding object (seen in Figure \ref{fig:rclabelling05}). By defining a threshold of the minimum size rectangles needed to be, too small rectangle were discarded, allowing to effectively skip objects that were either too far away from the camera or occluded.\\
@@ -209,83 +270,14 @@ $m = || v_f - v_r || = \sqrt{(\sin(\alpha) (-\cos(\beta)))^2 + \sin(\beta)^2 + \
 Using a rather rough scan-resolution of $10 \times 5$, at any distance of $n$ meters from the camera, neighbouring rays would be at most $0.866 \times n$ meters away from each other. Such rough scan-resolutions may be used to identify large objects in images and skip smaller ones.\\
 The execution-time this algorithm needed to identify objects in images was not depending on the number of tagged objects in the scene anymore but instead depended on the time needed to perform a fixed set of ray-casts. This allowed scenes to grow in size and complexity as the number of tagged objects would not influence the labelling-process anymore. In order to run this algorithm in real-time, a maximum distance had to be defined so that casting individual rays was deterministic. Depending on the scenario at hand, this limit should be set to the highest distance the object-recognition should still be able to detect objects at. Also, by defining appropriate scan-resolutions, the resulting regions would not include objects that were too far away from the camera or only had small parts of them visible.\\
 
-%////////////////////////////////////////////////
-\subsection{Implementing Mutators}
-The concept of this thesis proposed generating sets of diverse images by utilizing mutators to alter the appearance of single entities or whole scenes. Mutators would operate on a step-by-step basis, altering the state of an entity by each step. In this implementation, mutators would implement a simple interface \textit{IMutator} that provided methods to advance and reset itself. Three implementations of this interface were used to simplify the use of this interface for various applications: 
-\begin{description}
-\item [RangeMutator] Most attributes that were to be altered had numerical values that had to be incremented or decremented each step. \textit{RangeMutators} would have a \textit{FloatRange} associated to them that defined a value-range and step-size. These mutators could perform mutations on a single attribute of a single object using a value within the specified range of values and incremented or decremented this value using the specified step-size. RangeMutators would be used to manipulate most numeric values like light-intensity, the angles that doors were opened by and the orientation of the sun. The number of steps $s$ needed to complete one cycle of this mutator is $|\frac{maximum-minimum}{stepSize}|$ where $maximum$, $minimum$ and $stepSize$ are specified by a RangeMutator's FloatRange.
-\item [MultiMutator] A single entity could hold many mutators and in order to group them and make them easily accessible to the MutationManager, those mutators would be added to and effectively encapsulated by \textit{MultiMutators}. Those would advance mutators in a serial fashion: it advanced the first child-mutator until the cycle of this child-mutator was completed. Then it would advance the second child-mutator by one step, reset the first one and continue advancing the first child-mutator again. The number of steps a MultiMutator needed to complete a cycle was directly dependent on the mutators it grouped. Given the set of its mutators $m$ a MultiMutator needed $\prod_{i=1}^{|m|} S(m_i)$ steps to complete a cycle, where $S(x)$ returns the number of steps a mutator $x$ needed to complete a cycle.
-\item [ParallelMutator] There were cases where single mutators did not have great influence on scenes or did not have to have a whole mutation-step in a scene dedicated to them. For instance in this implementation, lamps in room A205 were mutated in parallel by using a ParallelMutator. These mutators would group other mutators like MultiMutators did, however upon mutation it would advance all of its mutators at the same time. Mutators that finished their current cycle were skipped. The number steps a ParallelMutator needed to complete a cycle was the number of steps the slowest of its mutators took to complete a cycle. ParallelMutators may have mutators of varying cycle lengths resulting in steps that few or only one of its mutators were advanced at.
-\end{description}
-Figure \ref{fig:classdiagram-mutators} shows the abovementioned mutators and a set of mutators that were implemented specifically to alter doors. Doors had a \textit{DoorMutator} associated to them which was a MultiMutator that encapsulated five other mutators. Four of them, \textit{DoorMaterialColorMutator}, \textit{DoorMetallicMutator}, \textit{DoorNormalMutator} and \textit{Door-SmoothnessMutator}, altered the color, "metallic" property, intensity of normal maps and "smoothness" property of a door's surface, respectively. \textit{DoorAngleMutator} changed the angle at which a door was opened.\\
-Figure \ref{fig:mutated-door} illustrates how doors had been affected by the mutators. The most-right images demonstrates a case of a poorly configured mutator: the "metallic" property that controls how light is reflected on surfaces, was altered to a value that results in unrealistic appearance.
-\begin{center}
-\noindent\includegraphics[width=10cm]{tex/img/ch05/Results_Door.png}
-\captionof{figure}{A door that shows mutated opening angle, color, light-reflection, normal-map and smoothness}
-\label{fig:mutated-door}
-\end{center}
-Similar mutators were implemented for ceiling lights (altering the intensity and range of lights), ambient light (mutating intensity and color) and the sun (altering color, intensity and orientation).
 
 %////////////////////////////////////////////////
-\subsection{Adding Robots to the Scene}
-\subsubsection{Importing Robots}
-Once the scene is set up, a robot is needed for \acs{AI} engineers to navigate around the scene and capture records. For this implementation the robot model "Pioneer 3AT" was chosen as the Institute of Robotics of University of Applied Sciences Mannheim works with "Pioneer"-robots and there were \ac{URDF} files of it available \cite{AmrRosConfig} online.\\
-There were few libraries that provide methods to import robots using URDF-files into Unity, an extensive one was \textit{"ROS\#"} which was developed by Siemens AG. It was described as "a set of open source software libraries and tools in C\# for communicating with ROS from .NET applications, in particular Unity3D" \cite{RosSharp}. This project implemented connecting to ROS instances, ROS' publish/subscribe pattern and importing robots into Unity scenes, however its software design introduced some potential problems: 
-\begin{enumerate}
-    \item Importing robots using URDF-files was done by downloading URDF-files from running ROS-instances. The need for a running ROS-instance would add to VERE's system requirements.
-    %ros-sharp/Unity3D/Assets/RosSharp/Scripts/Urdf/Editor/UrdfComponents/UrdfRobotExtensions.cs
-    \item ROS\#'s URDF importing component required the URDF files to be present in the "Asset" folder of Unity projects. This meant that URDF files downloaded from remote locations needed to be written to disk and compressed archives that contained additional files like meshes and textures needed to be extracted to disk first.
-    \item Even though robots imported by ROS\# had correct hierarchy of body parts and correct physical properties (as defined in the robots' URDF), Unity's physics engine often times failed to simulate physics at run-time, leading to robots being unable to move, falling through floors or being propelled into the air.
-\end{enumerate}
-To solve these problems, a library for parsing URDF-files, \textit{"URDFParser.NET"}, was implemented. The first two problems were solved by implementing a set of interfaces that represent filesystems, directories and files (\ref{fig:filesystem}) for local filesystems and ZIP-archives (using the open-source library \textit{"DotNetZip"} \cite{DotNetZip}) as URDF-files including meshes and textures were usually distributed as ZIP-archives. These interfaces could also be implemented to read files from remote locations such as FTP-servers or websites for future scenarios and use-cases.
-\begin{center}
-\noindent\includegraphics[width=14cm]{tex/img/ch05/URDFParser_FileSystemInterfaces03.png}
-\captionof{figure}{Interfaces for filesystems, directories and files}
-\label{fig:filesystem}
-\end{center}
-Contrary to ROS\#'s approach of interpreting hard-coded XML-elements, in URDFParser.NET parsing the URDF-files was implemented by defining \acp{DTO} for the different URDF-elements. URDF-Files could then be deserialized using these \acsp{DTO} with the \textit{"XmlSerializer"}-class provided by the .NET-Framework \cite{XmlSerializer}.\\
-The third problem with ROS\#'s implementation, faulty behaviour of physical bodies (also called \textit{"rigid bodies"} in the Unity Engine), required manual adjustments to the imported robot models: rearranging the robots' hierarchy so at all times a physical object may have only one physical child object solved robots' inability to move. Ensuring that colliders of physical parts (such as wheels and chassis) did not intersect with each other eliminated the problem of robots spontaneously launching into the air. 
+\section{Results}
 
-\subsubsection{Controlling Robots}
-Robots imported into Unity needed to be controllable by \ac{AI} engineers. This could be done in different ways. with some of those depending on the type of drive a specific robot featured:
-\begin{description}
-    \item [Wheel Drives] Robots may feature wheel-joints that can rotate on their local $x$ and $y$ axis. Rotating a wheel's $y$ axis allows to use it for steering while applying torque to its $x$ axis would move it and its connected bodies across surfaces, just like real-world wheels work. This technique can be used for most wheeled robots by limiting rotation of the $y$ axis to wheels that should not steer (e.g. the rear wheels of motor cycles).
-    \item [Connected Limbs] Limbs of robots can be connected using hinge joints that allow rotating connected bodies along one or more axis. Most industrialized robots feature three or more controllable axis and could be implemented in Unity by connecting two limbs via one hinge-joint each, allowing movement in one axis. Industrialized robots operate from a fixed position in 3D space.
-    \item [Legged Movement] Extending on the techniques used for implementing industrialized robots, one can combine multiple limbs to a body and move these limbs via hinge joints to simulate legged robots. The major difference from industrialized robots is that legged robots do not reside in a fixed position but move their bodies in 3D space.
-\end{description}
-While simulating wheel drives, connected limbs and legged movement is possible in Unity Engine and other engines, they come at the cost of complex configuration and intensive testing. An alternative to physical simulation is by simply fabricating the illusion of such, presuming that the scenario at hand does not require exact simulation of movement but allows for fabricated approximations:
-\begin{itemize}
-    \item Wheel drives can be reconstructed by wheel joints that allow for rotation in the $x$ and $y$ axis, however they do not require force directly applied to them for rotation . Applying directed force at a robot's body for acceleration and deceleration and applying torque force for turning would indirectly affect the wheels and thus fabricate the illusion of real wheel drives. 
-    \item Connected limbs can be imitated by creating a parent-child hierarchy for each connected limb. Making use of Unity's transforms, child limbs of parent limbs will directly be affected by any change to the parent's transform: for instance, rotating the base limb of a robot arm would also effectively move all of its child limbs with it.
-    \item Legged movement would be the hardest do fabricate in a way that behaves realistic. Most game engines feature animation systems that allows for replaying, looping and blending animations of complex body parts, resulting in movement that looks realistic. However it would not necessarily behave realistically as individual legs colliding with obstacles could lead to the whole body being moved, ignoring the friction of the other legs of a robot that may have contact to a surface and thus restrict movement of the robot's body.
-\end{itemize}
-
-Figure \ref{fig:pioneer3at} shows a "Pioneer 3AT" robot imported into Unity. The green cylinders represent the colliders of its wheels and it lacks any other colliders. Its only rigid body that had any mass and was simulated for gravity was its chassis. This combination of a single rigid body and one cylindrical collider for each wheel enabled the robot to appear and behave close to a real robot in the scene as neither collision with its chassis nor mass of its wheels were necessary for maneuvering it in the scene. Its wheels would turn upon force that is applied to its rigid body.
-
-\begin{center}
-    \includegraphics[width=0.39\textwidth]{tex/img/ch05/Pioneer3AT.png}
-    \captionof{figure}{A "Pioneer 3AT" robot imported into Unity}
-    \label{fig:pioneer3at}
-\end{center}
-
-Unity unifies input of various different input devices by providing an extendable set of values that either buttons and axis of one or multiple input devices can be mapped to. In its default configuration, Unity maps input for movement from both digital inputs like keyboards and analog inputs like joysticks to two axis, one for horizontal and one for vertical movement. As a result, pressing the "A" or "Arrow Up" buttons on a keyboard and pushing a joystick into the positive direction of its $y$ axis would affect the vertical input axis. In scripts, this could then be accessed by a simple call to $Input.GetAxis("vertical")$ which would return a value in the interval $[-1, 1]$ where positive values indicated a movement forwards and negative values indicated a movement backwards. Analogue to this, negative values of the horizontal axis would indicate movement to the left and positive values would indicate movement to the right.\\
-In VERE, the vertical axis for forwards and backwards movement was used to apply either a positive or negative force to the robot's body in its forward direction which would make it accelerate and decelerate. The horizontal axis was used to apply a torque force to its body, allowing it to steer. Due to the mass of the robot the applied torque force was not sufficient to move it while it was standing still, however it was strong enough to apply slight steering to the robot while it was driving, which in turn appeared realistic.
-
-
-\clearpage
-%////////////////////////////////////////////////
-\subsection{Results}
-
-\subsubsection{Evaluation: Viewer-Application}
+\subsection{Evaluation: Viewer-Application}
 
 \begin{center}
 \noindent\includegraphics[width=12cm]{tex/img/ch05/VERE_Viewer_01.png}
 \captionof{figure}{The viewer-application overlaying regions}
 \label{fig:vere-viewer}
 \end{center}
-%////////////////////////////////////////////////
-\section{Implementation II: Using Blender as an Offline Renderer}
-Goal: Use Blender as an offline renderer, allowing for potentially photorealistic images being generated using a raycasting engine like cycles.
-
-%////////////////////////////////////////////////
-
