@@ -1,25 +1,26 @@
 \chapter{Exemplaric Implementation Using Game Engines as Renderers and Frontends}
 \label{chap:implementations}
+In this chapter the concept presented in \ref{chap:conceptual-design} will be implemented using a game engine as renderer and frontend. After a brief overview of the goals and constraints of this specific implementation, it will look into reasons why games engines are suited for implementing the concept and how one was chosen for this implementation. Analogue to the steps described in the concept, this chapter will show how an existing environment was reconstructed to be used as a scene and how a robot was imported into this scene and optimized to work in the game engine. Further, it will show how mutators were implemented and used in the scene and compare different approaches to identifying objects. Lastly, this chapter shows how records were saved and how this implementation performed during recording sessions.
 
 %////////////////////////////////////////////////
 \section{Goals and Constraints of the Implementation}
 \label{section:goals-and-constraints}
 Inspired by a thesis written by Schweitzer in 2017 that approached using \acsp{CNN} that detect doors on autonomous robots \cite{Schweitzer2017}, the goal of this thesis' implementation became to generate records that could be used to train \acsp{CNN} that detect doors.\\ 
 The environment chosen for this implementation was the second floor of building "A" of University of Applied Sciences Mannheim as this building houses the Faculty of Computer Science and the Institute of Robotics is located in the second floor.\\
-This implementation of the concept had the working title "VERE" ("Virtual Environments for Robotics Experiments"). While it produced records that could be used to train \acsp{CNN}, no such tests were performed due to time-constraints.
+This implementation of the concept had the working title \ac{VERE}. While it produced records that could be used to train \acsp{CNN}, no such tests were performed due to time-constraints.
 
 \section{Using Game Engines}
 Making use of game engines to implement the concept was based on the observation that video games have always striven after improved visual presentation and more intuitive user interaction in order to attract customers, leading to the general availability of game engines that feature impressive graphical detail (as demonstrated in figure \ref{fig:unity-demo-graphics}), intuitive methods to interact with users and great performance on modern computer systems. Their ability to produce realistic images in real-time made them an attractive alternative to traditional offline renderers.
 \begin{center}
 \noindent\includegraphics[width=14cm]{tex/img/ch05/UnityGraphicsDemo.png}
-\captionof{figure}{Unity Technology's "Book of the Dead" promotional video video\cite{UnityDemoRealtimeTeaser}}
+\captionof{figure}[Unity Engine demo]{Unity Technology's "Book of the Dead" promotional video video\cite{UnityDemoRealtimeTeaser}}
 \label{fig:unity-demo-graphics}
 \end{center}
 
 New rendering-technologies that improve the quality of rendered images and performance of the rendering-process are being developed and published by both proprietary and open-source developers. A current example of a new technology recently published is NVIDIA's proprietary "RTX"-technology \cite{NVIDIARTX} that features "Hybrid Rasterization and Ray Tracing" \cite{NVIDIARayTracing} to combine raytracing and conventional rasterization in the rendering-process. A public demonstration of this new technique was shown running on the "Unreal Engine" in a short video (figure \ref{fig:unreal-demo-graphics})\cite{UnrealDemoReflections}.
 \begin{center}
 \noindent\includegraphics[width=14cm]{tex/img/ch05/UnrealGraphicsDemo.png}
-\captionof{figure}{Demonstration of NVIDIA RTX and Microsoft DXR running on the Unreal Engine \cite{UnrealDemoReflections}}
+\captionof{figure}[NVIDIA RTX demo]{Demonstration of NVIDIA RTX and Microsoft DXR running on the Unreal Engine \cite{UnrealDemoReflections}}
 \label{fig:unreal-demo-graphics}
 \end{center}
 
@@ -112,7 +113,7 @@ The reconstructed doors could now be used to render very detailed door meshes wi
 Once the scene is set up, a robot is needed for \acs{AI} engineers to navigate around the scene and capture records. For this implementation the robot model "Pioneer 3AT" was chosen as the Institute of Robotics of University of Applied Sciences Mannheim works with "Pioneer"-robots and there were \ac{URDF} files of it available \cite{AmrRosConfig} online.\\
 There were few libraries that provide methods to import robots using URDF-files into Unity, an extensive one was \textit{"ROS\#"} which was developed by Siemens AG. It was described as "a set of open source software libraries and tools in C\# for communicating with ROS from .NET applications, in particular Unity3D" \cite{RosSharp}. This project implemented connecting to ROS instances, ROS' publish/subscribe pattern and importing robots into Unity scenes, however its software design introduced some potential problems: 
 \begin{enumerate}
-    \item Importing robots using URDF-files was done by downloading URDF-files from running ROS-instances. The need for a running ROS-instance would add to VERE's system requirements.
+    \item Importing robots using URDF-files was done by downloading URDF-files from running ROS-instances. The need for a running ROS-instance would add to \ac{VERE}'s system requirements.
     %ros-sharp/Unity3D/Assets/RosSharp/Scripts/Urdf/Editor/UrdfComponents/UrdfRobotExtensions.cs
     \item ROS\#'s URDF importing component required the URDF files to be present in the "Asset" folder of Unity projects. This meant that URDF files downloaded from remote locations needed to be written to disk and compressed archives that contained additional files like meshes and textures needed to be extracted to disk first.
     \item Even though robots imported by ROS\# had correct hierarchy of body parts and correct physical properties (as defined in the robots' URDF), Unity's physics engine often times failed to simulate physics at run-time, leading to robots being unable to move, falling through floors or being propelled into the air.
@@ -140,7 +141,7 @@ While simulating wheel drives, connected limbs and legged movement is possible i
     \item Legged movement would be the hardest do fabricate in a way that behaves realistic. Most game engines feature animation systems that allows for replaying, looping and blending animations of complex body parts, resulting in movement that looks realistic. However it would not necessarily behave realistically as individual legs colliding with obstacles could lead to the whole body being moved, ignoring the friction of the other legs of a robot that may have contact to a surface and thus restrict movement of the robot's body.
 \end{itemize}
 
-Figure \ref{fig:pioneer3at} shows a "Pioneer 3AT" robot imported into Unity. The green cylinders represent the colliders of its wheels and it lacks any other colliders. Its only rigid body that had any mass and was simulated for gravity was its chassis. This combination of a single rigid body and one cylindrical collider for each wheel enabled the robot to appear and behave close to a real robot in the scene as neither collision with its chassis nor mass of its wheels were necessary for maneuvering it in the scene. Its wheels would turn upon force that is applied to its rigid body.
+Figure \ref{fig:pioneer3at} shows a "Pioneer 3AT" robot imported into Unity. The green cylinders represent the colliders of its wheels and it lacks any other colliders. Its only rigid body that had any mass and was simulated for gravity was its chassis. This combination of a single rigid body and one cylindrical collider for each wheel enabled the robot to appear and behave close to a real robot in the scene as neither collision with its chassis nor mass of its wheels were necessary for maneuvering it in the scene. Its wheels would turn when force is applied to its rigid body.
 
 \begin{center}
     \includegraphics[width=0.39\textwidth]{tex/img/ch05/Pioneer3AT.png}
@@ -149,7 +150,7 @@ Figure \ref{fig:pioneer3at} shows a "Pioneer 3AT" robot imported into Unity. The
 \end{center}
 
 Unity unifies input of various different input devices by providing an extendable set of values that either buttons and axis of one or multiple input devices can be mapped to. In its default configuration, Unity maps input for movement from both digital inputs like keyboards and analog inputs like joysticks to two axis, one for horizontal and one for vertical movement. As a result, pressing the "A" or "Arrow Up" buttons on a keyboard and pushing a joystick into the positive direction of its $y$ axis would affect the vertical input axis. In scripts, this could then be accessed by a simple call to $Input.GetAxis("vertical")$ which would return a value in the interval $[-1, 1]$ where positive values indicated a movement forwards and negative values indicated a movement backwards. Analogue to this, negative values of the horizontal axis would indicate movement to the left and positive values would indicate movement to the right.\\
-In VERE, the vertical axis for forwards and backwards movement was used to apply either a positive or negative force to the robot's body in its forward direction which would make it accelerate and decelerate. The horizontal axis was used to apply a torque force to its body, allowing it to steer. Due to the mass of the robot the applied torque force was not sufficient to move it while it was standing still, however it was strong enough to apply slight steering to the robot while it was driving, which in turn appeared realistic.
+In \ac{VERE}, the vertical axis for forwards and backwards movement was used to apply either a positive or negative force to the robot's body in its forward direction which would make it accelerate and decelerate. The horizontal axis was used to apply a torque force to its body, allowing it to steer. Due to the mass of the robot the applied torque force was not sufficient to move it while it was standing still, however it was strong enough to apply slight steering to the robot while it was driving, which in turn appeared realistic.
 
 %////////////////////////////////////////////////
 \section{Implementing Mutators}
@@ -163,20 +164,20 @@ Figure \ref{fig:classdiagram-mutators} shows the abovementioned mutators and a s
 Figure \ref{fig:mutated-door} illustrates how doors had been affected by the mutators. The most-right images demonstrates a case of a poorly configured mutator: the "metallic" property that controls how light is reflected on surfaces, was altered to a value that results in unrealistic appearance.
 \begin{center}
 \noindent\includegraphics[width=10cm]{tex/img/ch05/Results_Door.png}
-\captionof{figure}{A door that shows mutated opening angle, color, light-reflection, normal-map and smoothness}
+\captionof{figure}[Mutators applied to a door]{A door that shows mutated opening angle, color, light-reflection, normal-map and smoothness}
 \label{fig:mutated-door}
 \end{center}
 Similar mutators were implemented for ceiling lights (altering the intensity and range of lights), ambient light (mutating intensity and color) and the sun (altering color, intensity and orientation).
 
 %////////////////////////////////////////////////
 \section{Identifying Classifiers}
-Proper identification of objects in captured images proved to be a non-trivial problem and the solution to this problem used in VERE took multiple approaches until a satisfying solution was found.\\
+Proper identification of objects in captured images proved to be a non-trivial problem and the solution to this problem used in \ac{VERE} took multiple approaches until a satisfying solution was found.\\
 In order to specify which objects were of interest and shall be identified in captured images, a "Taggable"-component, that had a "Label Name"-attribute that would be treated as a classifier, was implemented and added each relevant object in a scene. The next sections will present the working principles of selected approaches that were implemented and tested and their qualities and drawbacks.
 
 \subsection{Approach I: Using Projection and Raycasting}
 The first approach to identifying which objects were visible from a given camera's perspective was to try to cast rays to each "tagged" object and, if hit, project its position from world space into the screen space of the camera. If an object was not hit, it would be occluded by other objects, if the projection from world- to screen space could not be made, the object would not be in the camera's field-of-view and thus not be visible. Cameras in the Unity Engine provide the \textit{"WorldToScreenPoint"} \cite{UnityDocsCamera} method that performs the projection from world space to screen space.\\
-Objects in the Unity Engine have \textit{Transforms} that specify location, rotation and scale. These do not translate to colliders of objects though and can not directly be used to determine if an object is hit by a raycast or not as an object may have no colliders that cover its origin: for instance a tire may have its origin at its center so a ray-cast to its origin would not necessarily hit any of its colliders. Therefore, the projection approach needed to consider objects' colliders. A solution to this was to define a set of points to test for along the edges and on the surfaces of colliders: an algorithm would create a point for each vertex of a collider and add a configurable amount of points along edges and surfaces. Each point of these sets could then be tested for using ray-casting and projection.\\
-Figure \ref{fig:w2s-labelling} shows a door that had these points added to its collider (for a single face) as boxes that were grey and would turn red if proven to be visible by ray-casting and projection. Additionally, a red rectangle indicated a region that spanned across all detected points. As can be seen in \ref{fig:labelling01}, \ref{fig:labelling02} and \ref{fig:labelling05} this approach worked reliably in cases where the door took up enough screen space to show multiple points horizontally. In cases where only few points were visible horizontally, as seen in \ref{fig:labelling04}, the indicated region became very thin and in some cases was only one pixel wide, even though parts of the geometry that were not covered by the indicated region were in fact visible. Figures \ref{fig:labelling05}, \ref{fig:labelling06} and \ref{fig:labelling04} were captured while increasing the distance between the camera and the door. These images illustrate a quality of this approach: as long as objects are not fully occluded, parts of them may still be visible from great distance. Due to the decrease in detail in images with the increase of distance from the camera to objects, this may not be usable for training object-recognition software though: distant objects may accommodate for few, if any, pixels in an image and thus be nearly indistinguishable other objects or become hard to identify. This could be solved by limiting the range of rays.\\
+Objects in the Unity Engine have \textit{Transforms} that specify location, rotation and scale. These do not translate to colliders of objects though and can not directly be used to determine if an object is hit by a raycast or not as an object may have no colliders that cover its origin: for instance a tire may have its origin at its center so a ray-cast to its origin would not necessarily hit any of its colliders. Therefore, the projection approach needed to consider objects' colliders. A solution to this was to define a set of points to test for along the edges and on the surfaces of colliders: an algorithm would create a point for each vertex of a collider and add a configurable amount of points along edges and surfaces. Each point of these sets could then be tested for using raycasting and projection.\\
+Figure \ref{fig:w2s-labelling} shows a door that had these points added to its collider (for a single face) as boxes that were grey and would turn red if proven to be visible by raycasting and projection. Additionally, a red rectangle indicated a region that spanned across all detected points. As can be seen in \ref{fig:labelling01}, \ref{fig:labelling02} and \ref{fig:labelling05} this approach worked reliably in cases where the door took up enough screen space to show multiple points horizontally. In cases where only few points were visible horizontally, as seen in \ref{fig:labelling04}, the indicated region became very thin and in some cases was only one pixel wide, even though parts of the geometry that were not covered by the indicated region were in fact visible. Figures \ref{fig:labelling05}, \ref{fig:labelling06} and \ref{fig:labelling04} were captured while increasing the distance between the camera and the door. These images illustrate a quality of this approach: as long as objects are not fully occluded, parts of them may still be visible from great distance. Due to the decrease in detail in images with the increase of distance from the camera to objects, this may not be usable for training object-recognition software though: distant objects may accommodate for few, if any, pixels in an image and thus be nearly indistinguishable other objects or become hard to identify. This could be solved by limiting the range of rays.\\
 A great problem with this approach proved to be its implications on performance: for each object, all of its points needed to be ray-casted for and, if not occluded, projected to the screen. The time it took to test for all objects in a scene was depending on the total amount of objects in a scene, thus the more detailed and larger a scene became, the more time was required to test which objects were visible.\\
 \begin{figure}[htp]
     % preliminary
@@ -212,7 +213,7 @@ A great problem with this approach proved to be its implications on performance:
     \subcaptionbox{\label{fig:labelling04}}{%
       \includegraphics[height=\twosubht]{tex/img/ch05/Labelling_W2S02a.png}%
     }
-    \caption{Drawing regions of the identified door from multiple perspectives}
+    \caption[Raycasting and projection approach]{Drawing regions of the identified door from multiple perspectives}
     \label{fig:w2s-labelling}
 \end{figure}
 
@@ -221,7 +222,7 @@ Solving this problem would require dynamically generating points on colliders, t
 
 % ** Raycasting
 \subsection{Approach II: Casting Rays from screen space}
-After using ray-casting on every object in the first approach raised performance-concerns, an alternative solution needed to be found. Ideally, a second approach should take the same time to test for visible objects on screen each time it was run and not be influenced by the total amount of objects in a scene.\\
+After using raycasting on every object in the first approach raised performance-concerns, an alternative solution needed to be found. Ideally, a second approach should take the same time to test for visible objects on screen each time it was run and not be influenced by the total amount of objects in a scene.\\
 The second approach to identifying objects on images aimed to imitate how humans would process captured images: humans would actually exclusively look at the images presented to them as no other information would be available to them. They may not know about all the other objects in a scene that are not visible in an image and they would most likely not recognize distant objects in images very well due to how few pixels would accommodate for them.\\
 Therefore the algorithm implemented in this approach (shown in algorithm \ref{algo:raycasting-screenspace}) scanned the scene from the active camera's perspective in a grid-like fashion. It would use the camera an image was taken with, the \textit{scan-resolution} that defined how many rays it would cast horizontally and vertically and the screen-resolution in pixels and then cast rays that originated from the camera's origin and went through points in screen space, going from top to bottom and left to right (shown in Figure \ref{fig:rclabelling02}). If a cast hit a collider [of a tagged object] it would check whether the same object was already hit before and retrieve a rectangle associated with the object, or create a new rectangle for the object. This rectangle would be extended so that it would contain the screen-coordinate that was used to cast the ray. Once the algorithm finished casting rays it would return a map with rectangles describing regions on screen covered by a single object each associated with their corresponding object (seen in Figure \ref{fig:rclabelling05}). By defining a threshold of the minimum size rectangles needed to be, too small rectangle were discarded, allowing to effectively skip objects that were either too far away from the camera or occluded.\\
 \begin{figure}[htp]
@@ -253,7 +254,7 @@ Therefore the algorithm implemented in this approach (shown in algorithm \ref{al
     \subcaptionbox{\label{fig:rclabelling06}}{%
       \includegraphics[height=\twosubht]{tex/img/ch05/RaycastingAlgorithm05.png}%
     }
-    \caption{Various stages the ray-Casting algorithm went through}
+    \caption{Various stages the raycasting algorithm went through}
     %\caption{Ray-Casting algorithm: division of the original image (\ref{fig:rclabelling01}) by horizontal and vertical lines (\ref{fig:rclabelling02}), detection of objects hit by rays (\ref{fig:rclabelling03}), calculating rectangles that cover objects (\ref{fig:rclabelling05}) and extending them to include neighboured area (\ref{fig:rclabelling06})}
     \label{fig:rc-labelling}
 \end{figure}
@@ -268,16 +269,39 @@ $v_r = \begin{pmatrix}\cos(\alpha) & 0 & -\sin(\alpha) \\ 0 & 1 & 0 \\ \sin(\alp
 \begin{pmatrix}1 & 0 & 0 \\ 0 & \cos(\beta) & \sin(\beta) \\ 0 & -\sin(\beta) & \cos(\beta)\end{pmatrix} \begin{pmatrix}0 \\ 0 \\ 1\end{pmatrix} = \begin{pmatrix}(-\sin(\alpha)) \cos(\beta) \\ \sin(\beta) \\ \cos(\alpha)\end{pmatrix}$\\
 $m = || v_f - v_r || = \sqrt{(\sin(\alpha) (-\cos(\beta)))^2 + \sin(\beta)^2 + \cos(\alpha)^2}$\\\\
 Using a rather rough scan-resolution of $10 \times 5$, at any distance of $n$ meters from the camera, neighbouring rays would be at most $0.866 \times n$ meters away from each other. Such rough scan-resolutions may be used to identify large objects in images and skip smaller ones.\\
-The execution-time this algorithm needed to identify objects in images was not depending on the number of tagged objects in the scene anymore but instead depended on the time needed to perform a fixed set of ray-casts. This allowed scenes to grow in size and complexity as the number of tagged objects would not influence the labelling-process anymore. In order to run this algorithm in real-time, a maximum distance had to be defined so that casting individual rays was deterministic. Depending on the scenario at hand, this limit should be set to the highest distance the object-recognition should still be able to detect objects at. Also, by defining appropriate scan-resolutions, the resulting regions would not include objects that were too far away from the camera or only had small parts of them visible.\\
+The execution-time this algorithm needed to identify objects in images was not depending on the number of tagged objects in the scene anymore but instead depended on the time needed to perform a fixed set of ray-casts. This allowed scenes to grow in size and complexity as the number of tagged objects would not influence the labelling-process anymore. In order to run this algorithm in real-time, a maximum distance had to be defined so that casting individual rays was deterministic. Depending on the scenario at hand, this limit should be set to the highest distance the object-recognition should still be able to detect objects at. Also, by defining appropriate scan-resolutions, the resulting regions would not include objects that were too far away from the camera or only had small parts of them visible.
 
+\section{Generating Datasets}
+Right after loading a scene \ac{VERE} created a list of all distinct labels associated to tagged objects. When it saved captured images it created a JSON file that included information about the position and rotation of the camera that was used to capture the image and a list of identified objects along with the position and size (in pixels) of their associated region in the image and their label. It also saved a textfile for each image that can be used with the neural network framework \textit{"Darknet"}.\\
+In order to shorten the duration of the recording process, identification of objects in the scene was only performed once per mutation cycle as the robot did not move during the capture process. However this optimization did not take mutators into account that altered the geometry or transforms of objects, potentially leading to inaccurate detection regions.
 
 %////////////////////////////////////////////////
-\section{Results}
+\section{Executing the Software}
+\subsection{Running the Software in Automatic Mode}
+There were several factors that had an impact on \ac{VERE}'s performance. Aside from the configurable parameters (scan resolution and scan resolution), the hardware \ac{VERE} would run on limited its performance. Contrary to regular games it did not only render frames to screen but captured an image each frame and saved it along with meta data. Rendering frames utilized the GPU while casting rays to identify objects was performed on the CPU. Lastly, saving the records to disk required a drive that handled writing multiple files in short intervals well.\\
+To test \ac{VERE} it was run on a machine with a \textit{Intel i5-2310} CPU, \textit{NVIDIA GeForce GTX 760} GPU and a \textit{Kingston A400} SSD.
+Table \ref{table:vere-performance} shows how \ac{VERE} performed on this hardware in automatic mode (shown in detail in section \ref{ch04-control-flow}), completing three mutation-cycles with images using a very low resolution ($640 \times 360$ pixels), a common resolution used in modern monitors ($1920 \times 1080$ pixels, commonly referred to as \textit{"Full HD"} and \textit{"1080p"}) and a very high resolution that is used in modern high end displays (also known as \textit{"4K UHD"} and \textit{"4K"}). The scan resolution chosen was $200 \times 50$.
 
-\subsection{Evaluation: Viewer-Application}
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{c|c|c|c|c|c|c}
+        \hline
+              \thead{Image\\Resolution} & \thead{Cycle \#1 (s)} & \thead{Cycle \#2 (s)} & \thead{Cycle \#3 (s)} & \thead{Cycle\\Average (s)} & \thead{Captures \textbackslash s} \\
+        \hline
+            $640 \times 360$ & 49.64 & 53.97 & 51.41 & 51.67 & 18.79 \\
+            $1920 \times 1080$ & 260.32 & 272.01 & 287.14 & 273.16 & 3.55 \\
+            $3840 \times 2160$ & 871.69 & 903.18 & 899.74 & 891.54 & 1.09 \\
+    \end{tabular}
+    \caption[Comparison of recording sessions]{Comparison of recording sessions with different image resolutions}
+    \label{table:vere-performance}
+\end{table}
+
+
+\subsection{Inspecting the Generated Output}
+To verify the correctness of the output generated by \ac{VERE} an application was needed that parsed the generated files and visualized the regions of identified objects. A desktop application was implemented under the working title \textit{VERE-Viewer}. It used utilized components provided by the .NET Framework for its UI.
 
 \begin{center}
-\noindent\includegraphics[width=12cm]{tex/img/ch05/VERE_Viewer_01.png}
-\captionof{figure}{The viewer-application overlaying regions}
+\noindent\includegraphics[width=14cm]{tex/img/ch05/VERE_Viewer_Application02.png}
+\captionof{figure}[The VERE-Viewer application]{VERE-Viewer visualizing regions of identified objects}
 \label{fig:vere-viewer}
 \end{center}
