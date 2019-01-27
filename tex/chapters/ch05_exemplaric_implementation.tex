@@ -13,7 +13,7 @@ This implementation of the concept had the working title \ac{VERE}. While it pro
 Making use of game engines to implement the concept was based on the observation that video games have always striven after improved visual presentation and more intuitive user interaction in order to attract customers, leading to the general availability of game engines that feature impressive graphical detail (as demonstrated in figure \ref{fig:unity-demo-graphics}), intuitive methods to interact with users and great performance on modern computer systems. Their ability to produce realistic images in real-time made them an attractive alternative to traditional offline renderers.
 \begin{center}
 \noindent\includegraphics[width=14cm]{tex/img/ch05/UnityGraphicsDemo.png}
-\captionof{figure}[Unity Engine demo]{Unity Technology's "Book of the Dead" promotional video video\cite{UnityDemoRealtimeTeaser}}
+\captionof{figure}[Unity Engine demo]{Unity Technology's "Book of the Dead" promotional video video \cite{UnityDemoRealtimeTeaser}}
 \label{fig:unity-demo-graphics}
 \end{center}
 
@@ -49,8 +49,6 @@ After evaluating modern and popular game engines considering the abovementioned 
 \section{Designer: Building the Scene}
 \subsection{Rebuilding a real environment}
 As stated in \ref{section:goals-and-constraints} the environment used to base the scene on was the second floor of building "A" of University of Applied Sciences Mannheim. However at this time no 3D model of the floor, let alone the building existed so it had to be handcrafted using the resources that were available: a floor plan (shown in Figure \ref{fig:floor-plan-image}) and measurements taken by hand.
-\newlength{\twosubht}
-\newsavebox{\twosubbox}
 
 \begin{figure}[htp]
     % preliminary
@@ -72,7 +70,7 @@ As stated in \ref{section:goals-and-constraints} the environment used to base th
     \caption{Floor plan, photo (\ref{fig:floor-plan-image}) and reconstruction in Blender (\ref{fig:floor-plan-blender})}
 \end{figure}
 
-Figure \ref{fig:floor-plan-blender} shows the reconstruction of the basic layout of the floor in Blender. As the goal of this implementation was to generate records used for detecting doors, special attention had to be paid to modeling the doors in this floor. This required taking measures of the doors themselves, their handles and frames as well as reconstruction of the properties of their surfaces. Figure \ref{fig:doors} shows the various doors present on this floor: office doors (shown in \ref{fig:door01} featured metallic handles, a black and matte metal surface and were broader than most other doors. Doors to lecture rooms (\ref{fig:door02}) had blue matte metal surfaces and were not on the same level as the walls but inset into the walls. They also had glass-panels located right above them. The portals (\ref{fig:door03}) to the hallway that lead to the lecture rooms, one present at each end of the hallway, had glass doors and panels and matte black metal beams and frames. Lastly there were doors to storage rooms (\ref{fig:door04}) that did not feature great geometrical detail as the other doors did. They blended into the wall and featured knobs and hinges that were noticeably shiny.
+Figure \ref{fig:floor-plan-blender} shows the reconstruction of the basic layout of the floor in the 3D modeling software Blender. As the goal of this implementation was to generate records used for detecting doors, special attention had to be paid to modeling the doors in this floor. This required taking measures of the doors themselves, their handles and frames as well as reconstruction of the properties of their surfaces. Figure \ref{fig:doors} shows the various doors present on this floor: office doors (shown in \ref{fig:door01} featured metallic handles, a black and matte metal surface and were broader than most other doors. Doors to lecture rooms (\ref{fig:door02}) had blue matte metal surfaces and were not on the same level as the walls but inset into the walls. They also had glass-panels located right above them. The portals (\ref{fig:door03}) to the hallway that lead to the lecture rooms, one present at each end of the hallway, had glass doors and panels and matte black metal beams and frames. Lastly there were doors to storage rooms (\ref{fig:door04}) that did not feature great geometrical detail as the other doors did. They blended into the wall and featured knobs and hinges that were noticeably shiny.
 
 \begin{figure}[htp]
     \sbox\twosubbox{%
@@ -111,7 +109,7 @@ The reconstructed doors could now be used to render very detailed door meshes wi
 \subsection{Adding Robots to the Scene}
 \subsubsection{Importing Robots}
 Once the scene is set up, a robot is needed for \acs{AI} engineers to navigate around the scene and capture records. For this implementation the robot model "Pioneer 3AT" was chosen as the Institute of Robotics of University of Applied Sciences Mannheim works with "Pioneer"-robots and there were \ac{URDF} files of it available \cite{AmrRosConfig} online.\\
-There were few libraries that provide methods to import robots using URDF-files into Unity, an extensive one was \textit{"ROS\#"} which was developed by Siemens AG. It was described as "a set of open source software libraries and tools in C\# for communicating with ROS from .NET applications, in particular Unity3D" \cite{RosSharp}. This project implemented connecting to ROS instances, ROS' publish/subscribe pattern and importing robots into Unity scenes, however its software design introduced some potential problems: 
+There were few libraries that provide methods to import robots using URDF-files into Unity, an extensive one was \textit{"ROS\#"} which was developed by Siemens AG. Siemens described it to be \textit{"a set of open source software libraries and tools in C\# for communicating with ROS from .NET applications, in particular Unity3D"} \cite{RosSharp}. This project implemented connecting to ROS instances, ROS' publish/subscribe pattern and importing robots into Unity scenes, however its software design introduced some potential problems: 
 \begin{enumerate}
     \item Importing robots using URDF-files was done by downloading URDF-files from running ROS-instances. The need for a running ROS-instance would add to \ac{VERE}'s system requirements.
     %ros-sharp/Unity3D/Assets/RosSharp/Scripts/Urdf/Editor/UrdfComponents/UrdfRobotExtensions.cs
@@ -263,7 +261,7 @@ Therefore the algorithm implemented in this approach (shown in algorithm \ref{al
 In practice, these rectangles usually would not fully cover objects which is why in the implementation of the algorithm, an option was added to extend the width and height of the rectangles by an adjustable factor, resulting in rectangles that fully covered objects and even included neighbouring area (like parts of the ceiling, wall and floor in Figure \ref{fig:rclabelling06}). Including neighbouring areas in these rectangles adds context to the found objects that may contribute to the quality of detection of object-recognition software. For doors, in this implementation this factor was set to $1.5 \times 1.3$ for width and height, respectively, to accommodate for the distinctive shape of doors.\\
 The scan-resolution effectively determines the level of detail that should be detected at which distance and the position of its rays depend on the horizontal and vertical field of view of the camera that is used. The vertical and horizontal field of view of a given camera can be calculated using the focal-length $f$ and sensor-size $d$ (provided by Unity's \textit{physical camera} feature) and the general formula for calculating the angle of view \cite{WikipediaAngleOfView}:
 \[\alpha = 2 \arctan(\frac{d}{2f})\]
-Unity's camera will have a $36mm \times 24mm$ sensor-size and $20.78mm$ focal-length by default, resulting in a field of view of $82 \times 60$ degrees horizontally and vertically. The maximum distance between two rays being one meter from the camera can be determined by calculating the distance $m$ between any unit-vector (e.g. $v_f = (0, 0, 1)$) and the same vector with a rotation along the $y$ and $x$ axis by the scan-resolution $r$ applied to it:\\
+Unity's camera will have a $36mm \times 24mm$ sensor-size and $20.78mm$ focal-length by default, resulting in a field of view of $82 \times 60$ degrees horizontally and vertically. The maximum distance between two rays being one meter from the camera can be determined by calculating the distance $m$ between any unit-vector (e.g. $v_f = (0, 0, 1)^T$) and the same vector with a rotation along the $y$ and $x$ axis by the scan-resolution $r$ applied to it:\\
 $\alpha = \frac{x_f}{x_r}, \beta = \frac{y_f}{y_r}$\\
 $v_r = \begin{pmatrix}\cos(\alpha) & 0 & -\sin(\alpha) \\ 0 & 1 & 0 \\ \sin(\alpha) & 0 & \cos(\alpha)\end{pmatrix}
 \begin{pmatrix}1 & 0 & 0 \\ 0 & \cos(\beta) & \sin(\beta) \\ 0 & -\sin(\beta) & \cos(\beta)\end{pmatrix} \begin{pmatrix}0 \\ 0 \\ 1\end{pmatrix} = \begin{pmatrix}(-\sin(\alpha)) \cos(\beta) \\ \sin(\beta) \\ \cos(\alpha)\end{pmatrix}$\\
@@ -275,10 +273,18 @@ The execution-time this algorithm needed to identify objects in images was not d
 Right after loading a scene \ac{VERE} created a list of all distinct labels associated to tagged objects. When it saved captured images it created a JSON file that included information about the position and rotation of the camera that was used to capture the image and a list of identified objects along with the position and size (in pixels) of their associated region in the image and their label. It also saved a textfile for each image that can be used with the neural network framework \textit{"Darknet"}.\\
 In order to shorten the duration of the recording process, identification of objects in the scene was only performed once per mutation cycle as the robot did not move during the capture process. However this optimization did not take mutators into account that altered the geometry or transforms of objects, potentially leading to inaccurate detection regions.
 
+\subsection{Inspecting the Generated Output}
+To verify the correctness of the output generated by \ac{VERE} an application was needed that parsed the generated files and visualized the regions of identified objects. A desktop application was implemented under the working title \textit{VERE-Viewer}. It used utilized components provided by the .NET Framework for its UI.
+
+\begin{center}
+\noindent\includegraphics[width=14cm]{tex/img/ch05/VERE_Viewer_Application02.png}
+\captionof{figure}[The VERE-Viewer application]{VERE-Viewer visualizing regions of identified objects}
+\label{fig:vere-viewer}
+\end{center}
+
 %////////////////////////////////////////////////
-\section{Executing the Software}
-\subsection{Running the Software in Automatic Mode}
-There were several factors that had an impact on \ac{VERE}'s performance. Aside from the configurable parameters (scan resolution and scan resolution), the hardware \ac{VERE} would run on limited its performance. Contrary to regular games it did not only render frames to screen but captured an image each frame and saved it along with meta data. Rendering frames utilized the GPU while casting rays to identify objects was performed on the CPU. Lastly, saving the records to disk required a drive that handled writing multiple files in short intervals well.\\
+\section{Performance of the Software}
+There were several factors that had an impact on \ac{VERE}'s performance. Aside from the configurable parameters (scan resolution and screen or image resolution), the hardware \ac{VERE} would run on limited its performance. Contrary to regular games it did not only render frames to screen but captured an image each frame and saved it along with meta data. Rendering frames utilized the GPU while casting rays to identify objects was performed on the CPU. Lastly, saving the records to disk required a drive that handled writing multiple files in short intervals well.\\
 To test \ac{VERE} it was run on a machine with a \textit{Intel i5-2310} CPU, \textit{NVIDIA GeForce GTX 760} GPU and a \textit{Kingston A400} SSD.
 Table \ref{table:vere-performance} shows how \ac{VERE} performed on this hardware in automatic mode (shown in detail in section \ref{ch04-control-flow}), completing three mutation-cycles with images using a very low resolution ($640 \times 360$ pixels), a common resolution used in modern monitors ($1920 \times 1080$ pixels, commonly referred to as \textit{"Full HD"} and \textit{"1080p"}) and a very high resolution that is used in modern high end displays (also known as \textit{"4K UHD"} and \textit{"4K"}). The scan resolution chosen was $200 \times 50$.
 
@@ -295,13 +301,3 @@ Table \ref{table:vere-performance} shows how \ac{VERE} performed on this hardwar
     \caption[Comparison of recording sessions]{Comparison of recording sessions with different image resolutions}
     \label{table:vere-performance}
 \end{table}
-
-
-\subsection{Inspecting the Generated Output}
-To verify the correctness of the output generated by \ac{VERE} an application was needed that parsed the generated files and visualized the regions of identified objects. A desktop application was implemented under the working title \textit{VERE-Viewer}. It used utilized components provided by the .NET Framework for its UI.
-
-\begin{center}
-\noindent\includegraphics[width=14cm]{tex/img/ch05/VERE_Viewer_Application02.png}
-\captionof{figure}[The VERE-Viewer application]{VERE-Viewer visualizing regions of identified objects}
-\label{fig:vere-viewer}
-\end{center}
