@@ -199,31 +199,35 @@ Figure \ref{fig:3d-cube-uv-mapping} shows the UV-map of a cube and a texture lai
 \end{center}
 
 \subsection{Rendering}
-The process of creating images of 3D models or scenes is called \emph{Rendering}. It renders objects contained in scenes from the viewpoint of a virtual camera to a 2D plane and takes materials and lighting information into account. There are two categories of renderers: \emph{offline-renderers} usually strive for realistic visual output and use expensive techniques to create images, such as physics-based rendering. The drawbacks of those is that the time they require to render scenes is directly dependent on the scene's complexity. \emph{Online-renderers} run in real-time to produce images in quick succession.\\
-If these images are generated and shown just quick enough, movements in the scene appear continuous: in studies, the majority of participants could distinguish modulated light (such as displays) at rates of $50-90 Hz$, however other studies found that this number may be as high as $500 Hz$ \cite{Davis2015}. While there is a scientific disagreement about the rate of images that humans are able to perceive, process and distinguish, the industry introduced standards for electronic displays. Modern displays present images at $60-144 Hz$.
+The process of creating images of 3D models or scenes is called \emph{Rendering}. It draws objects contained in scenes from the viewpoint of a virtual camera to a 2D plane and takes materials and lighting information into account. There are two categories of renderers: \emph{offline renderers} usually strive for realistic visual output and use expensive techniques to create images, such as physics-based rendering. The drawbacks of those is that the time they require to render scenes is directly dependent on the scene's complexity. \emph{Online renderers} run in real-time to produce images in quick succession.\\
+If these images are generated and shown just quickly enough, movements in the scene appear continuous: in studies, the majority of participants could distinguish modulated light (such as displays) at rates of $50-90 Hz$, however other studies found that this number may be as high as $500 Hz$ \cite{Davis2015}. While there is a scientific disagreement about the rate of images that humans are able to perceive, process and distinguish, the industry introduced standards for electronic displays. Modern displays present images at $60-144 Hz$.\\
+The following sections will show two technologies widely used in offline and online renderers.
 
-\paragraph{Raytracing} A widely used technology used in offline-renderers is \emph{raytracing}. To a certain extend, it imitates real cameras in that for each pixel in the image that is to be rendered, it sends rays from a virtual camera to objects in the scene to calculate the color at the point where it hit an object, considering the material of the surface that was hit. Reflective properties of materials are taken into account by sending rays from the point an object was hit at. Noise and strong contrasts between pixels in the image can be countered by casting multiple rays per pixel and averaging the resulting color.
+\subsubsection{Raytracing}
+A widely used technology used in offline renderers is \emph{raytracing}. To a certain extend, it imitates real cameras in that for each pixel in the image that is to be rendered, it sends rays from a virtual camera to objects in the scene to calculate the color at the point where it hit an object, considering the material of the surface that was hit. Reflective properties of materials are taken into account by sending rays from the point an object was hit at. Noise and strong contrasts between pixels in the image can be countered by casting multiple rays per pixel and averaging the resulting color.\\
+Raytracing is used in software like \emph{Blender} that aims to produce physically correct output.
 
-\paragraph{Rasterization} Modern games use \emph{rasterization} to render scenes to the screen. Rasterization processes 3D objects through various stages that differ in their exact implementation but share the same concepts. First, geometry is processed by a \emph{vertex shader} that transforms all vertices of the geometry to screen space (using the transformations shown in \ref{ch03-transforms}). This shader may manipulate properties like color of vertices but it can not create new geometry. The geometry is further passed to a \emph{geometry shader} which, contrary to vertex shaders, may add to the geometry to add detail to it. For instance, it may make use of technologies like tessellation which sub-divides geometry into further triangles to round the silhouette of geometry. The resulting geometry is broken down into \emph{fragments} by discarding vertices that are not visible in the image because they are either not in the field-of-view of the camera (\emph{clipping}) or are not facing the camera (\emph{culling}).
-The resulting geometry is passed through a \emph{pixel shader} that may implement various effects of texture maps described in \ref{ch03-materials} such as normal maps and specular maps. 
-
-\subsection{Post-processing}
-General about shading [TBD]
-
-\begin{description}
-    \item[Anti-Aliasing]
-    \item [Ambient Occlusion]
-    \item [Depth of Field]
-    \item [High Dynamic Range]
-\end{description}
-%- Definition
-   %- Techniques
-%- Photorealism (Physics)
-
+\subsubsection{Rasterization} Modern games use \emph{rasterization} to render scenes to the screen. This approach processes 3D objects through various stages that differ in their exact implementation but share the same concepts. First, geometry is processed by a \emph{vertex shader} that transforms all vertices of the geometry to screen space (using the transformations shown in \ref{ch03-transforms}). This shader may manipulate properties like color of vertices but it can not create new geometry. The geometry is further passed to a \emph{geometry shader} which, contrary to vertex shaders, may add to the geometry to add detail to it. For instance, it may make use of technologies like tessellation which sub-divides geometry into further triangles to round the silhouette of geometry. The resulting geometry is broken down into \emph{fragments} by discarding vertices that are not visible in the image because they are either not in the field-of-view of the camera (\emph{clipping}) or are not facing the camera (\emph{culling}).
+Then the geometry is rasterized: polygons are translated to individual pixels in the \emph{frame buffer}. By performing a so called \emph{depth test} for each pixel, only the geometry that is nearest to the camera will be drawn for an individual pixel.
+Lastly, resulting the pixels are passed through a \emph{pixel shader} that may implement various effects of texture maps described in \ref{ch03-materials} such as normal maps and specular maps. They may also manipulate the \emph{z-buffer} that is used to store depth information. When at later stages textures are passed to pixel shaders, they may manipulate the textures by applying two-dimensional effects like blur.\\
+\emph{Post-processing} is often done in vertex and pixel shaders and allows to apply effects to the scene that require information about the entire image, such as \emph{anti-aliasing} (used to smooth out hard edges), \emph{bloom} (glow of light seen in real cameras) and blur (e.g. \emph{motion blur} and blur caused by depth in images that is out of focus, \emph{depth of field}).
 
 % //////////////////////////////////////////////////
 \section{Game Engines}
-Definition, Overview, Concepts (Entity Component System, Asset Bundles) [TBD]
+Game engines are software environments that provide a set of components that allows to create and run video games. They feature a \emph{rendering} and \emph{audio engine} used for audio and visual output and a \emph{physics engine} to simulate aspects of physics such as gravity and collision. Many also feature a so called \emph{game loop} that orchestrates these engines and processes a game's logic.
+
+\subsection{Development Tools}
+
+
+\subsection{Implementing Logic}
+While game engines handle sophisticated tasks like rendering and simulating physics on their own, logic is implemented by game developers. There are different ways to implement logic and this section will focus on two approaches that are widely used.
+
+\subsubsection{Object Oriented Programming}
+
+
+\subsubsection{Entity-Component-System}
+
+
 %- Definition
 %- Overview
 %- Concepts
@@ -234,4 +238,4 @@ Definition, Overview, Concepts (Entity Component System, Asset Bundles) [TBD]
 % Nur benötigtes
 \subsection{Types of Drives}
 \subsection{Unified Robot Description Format}
-\ac{URDF}
+\ac{URDF} [TBD]
