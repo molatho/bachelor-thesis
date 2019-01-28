@@ -25,8 +25,8 @@ New rendering-technologies that improve the quality of rendered images and perfo
 \end{center}
 
 %////////////////////////////////////////////////
-\subsection{Choosing a Game Engine}
-The decision which game engine to use to implement the concept was based on a set of factors (inspired by criteria defined by Cowan \textit{et al} \cite{6901570}) that needed to be considered:
+\subsubsection{Choosing a Game Engine}
+The decision which game engine to use to implement the concept was based on a set of factors (inspired by criteria defined by Cowan \textit{et al.} \cite{6901570}) that needed to be considered:
 \begin{description}
 \item [Stability] While the goal of using game engines as real-time renderers is to generate records quickly, recording sessions may take several hours. The software needs to maintain stable operation because recording sessions may run un-supervised and crashes may be detected only hours later.
 \item [Crossplatform] Support of multiple platforms serves multiple purposes. First it aims to avoid platform-specific problems that may either be already existent or yet to come. Operating-system updates can cause software to malfunction as was recently seen with multiple updates of the Windows operating system \cite{heiseWindowsUpdate}. Secondly, supporting multiple platforms greatly extends the potential groups of users. Users that own licenses for proprietary operating systems will be able to run the software on their current systems while users that lack licenses to proprietary operating systems may chose a free operating system. The third and very important aspect of crossplatform-capabilities is that developers only need to implement code specific to a game but no code specific to platforms. This allows to compile a game for multiple platforms without spending any time on the target platforms' specifics.

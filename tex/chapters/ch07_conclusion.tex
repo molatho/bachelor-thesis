@@ -1,24 +1,32 @@
 \chapter{Conclusion}
 % Abschließende Bewertung!
-The preceding chapters presented a concept for automating generation of diverse datasets for training \acp{CNN} and the implementation thereof.
+The goal of the thesis was to develop a concept for a software system that allows to generate diverse sets of labelled images of virtual environment using virtual robots that can be used for training \acp{CNN}. 
+[TBD]
 
 % Schweitzer S. 67 [sic]
-% In his thesis on (...), Schweitzer said that "deep learning algorithms [are] highly depending on the availability of task specific datasets".
+% In his thesis on (...), Schweitzer said that .
 
-\section{Pitfalls}
+\section{Pitfalls} 
+[TBD]
 \subsubsection{Reconstructing Real Environments}
+[TBD]
 % Zeit, Detailgrad
 \subsubsection{Prior Knowledge}
+[TBD]
 % CNN, Game Engines, Computer Graphics (Blender)!
 
 \section{Future Work}
 \subsection{Practical Application}
 % zB mit Darknet, da implementiert
+[TBD]
 
 \subsection{Teamwork}
-% AI Engineers + Designers
+During the implementation of \ac{VERE} it became clear that a single person trying to perform multiple sophisticated disciplines at once would prove to be a pitfall. Therefore implementing the concept is best done in a team of people that are experts at the tasks involved: 3D artists could reconstruct existing environments or model new ones while designers and programmers specify and develop the mutators required in a scene. \ac{AI} experts could use the time, that 3D artists, designers and programmers take to set up a scene, to develop a \ac{NN} specific to the needs of the scenario.
 
-\subsection{Building Scenes}
-\subsubsection{Procedurally Generated Content}
+\subsection{Reconstructing and Building Scenes}
+Reconstructing and building scenes needed to be done with great care and proved to require a lot of time to produce satisfying results. However there are approaches that may greatly simplify these tasks.
+\subsubsection{Procedural Geometry}
+Procedurally generating scenes by defining rules that specify how re-usable pieces of geometry and entities (\emph{prefabs}) are appended to form a scene is already used in games today \cite{strafeWiki}. Once these rules and prefabs are created, an arbitrary amount or scenes could be generated in a fraction of the time it would take designers to produce them. Future work on the concept presented in this thesis could evaluate if this approach is feasible and produces realistic results. Aspects that are of particular interest would be the complexity of the workflow of this approach and how it could be implemented so rules that were defined and prefabs that were created would be portable to multiple scenarios.
 
 \subsubsection{Pointcloud Data}
+To decrease the time spent on reconstructing real environments, pointcloud data of scans of existing environments could be used as blueprints. These would naturally contain relevant measures needed to reconstruct geometry, such as the dimensions of walls and floors. While this may sound trivial, gathering this data requires time and access to the environment and these may be limited resources. Reconstruction of environments by using pointcloud data is subject to current research and could be an interesting approach that future work might pick up and work on \cite{MINEO201981}. 
