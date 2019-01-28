@@ -9,7 +9,7 @@ This chapter will introduce the terminology, central ideas and architectural bas
 The system features at least one virtual 3D environment (a \emph{scene}) that represents a specific place (either an existing or non-existing place) and a virtual \emph{robot} that operates in said environment. It is used by two groups of users: \emph{designers} and \emph{\ac{AI} engineers}. Figure \ref{fig:use-cases-abstract} shows these groups of users and their high-level and abstract use-cases.
 \begin{figure}[t]
     \centering
-    \includegraphics[width=6cm]{tex/img/ch04/UseCases_HighLeve.pdf}
+    \includegraphics[width=6cm]{tex/img/ch04/UseCases_HighLevel.pdf}
     \captionof{figure}{High-level Use-Cases}
     \label{fig:use-cases-abstract}
 \end{figure}
@@ -63,7 +63,7 @@ Designers need to import assets (such as 3D models, materials and textures) into
 \acs{AI} engineers may want to configure mutators at run-time in order to explore and study their effects on scenes (such as changes in lighting). Also they may want to add or change waypoints to vary what part of a scene is captured during recording sessions.
 
 Figure \ref{fig:use-cases} summarizes these refinements and shows that most use-cases are interacted with by only one role, separating them into groups of use-cases required for initial setup ("Create ..."), run-time ("Robot" and "Recording" use-cases) and a special group that is used to tweak run-time behaviour to achieve varying sets of records ("Manage Waypoints", "Manage Mutators"). 
-\begin{figure}[h]
+\begin{figure}
     \centering
     \includegraphics[width=10cm]{tex/img/ch04/UseCases_Fine.pdf}
     \captionof{figure}{Refined Use-Cases}
@@ -73,10 +73,10 @@ Figure \ref{fig:use-cases} summarizes these refinements and shows that most use-
 
 %////////////////////////////////////////////////
 \section{Automatic Mode: Control Flow}
+\label{ch04-control-flow}
 The abovementioned automatic mode the system can run in (shown in Figure \ref{fig:control-flow}) is used to automate the process of moving robots in scenes, capturing records and mutating scenes.\\
 When active, it will alter a scene by advancing mutation and capture records as long as the mutation-cycle has not been completed. Once the mutation-cycle is completed, the mutation will be reset. If the robot in the scene has not reached its destination yet it will be moved and the process continues by running the mutation-cycle again.\\
-\label{ch04-control-flow}
-\begin{figure}[b]
+\begin{figure}[htb!]
     \centering
     \includegraphics[width=8cm]{tex/img/ch04/ActivityDiagram_HighLevel.pdf}
     \captionof{figure}{Control Flow of the automatic mode}
@@ -87,7 +87,7 @@ This behaviour effectively iterates through all mutations set up for a scene, ap
 %////////////////////////////////////////////////
 \section{Components}
 While the high-level use-cases (Figure \ref{fig:use-cases-abstract}) implicate the need for three high-level components, refinement of the use-cases (Figure \ref{fig:use-cases}) encourages the use of packages to encapsulate complex components. Figure \ref{fig:component-diagram} shows an abstract component used for controlling robots (\emph{RobotController}), a package that provides components needed for capturing records (\emph{Recording}) and another one that contains components used to manage scenes (\emph{SceneManagement}).
-\begin{figure}[b]
+\begin{figure}[hb!]
     \centering
     \includegraphics[width=8cm]{tex/img/ch04/ComponentDiagram_System.pdf}
     \captionof{figure}{High-level component diagram}
@@ -95,7 +95,7 @@ While the high-level use-cases (Figure \ref{fig:use-cases-abstract}) implicate t
 \end{figure}
 % Recording
 The "Recording"-package (Figure \ref{fig:component-diagram-recording}) contains two abstract components: \emph{CaptureController} is used to start and stop automatic capturing of records. It captures images and enriches those with labels by making use of the \emph{ImageLabeller}-component. The ImageLabeller-component needs to be able to identify classifiers in images. As neither capturing images nor identifying classifiers are necessarily trivial tasks, the implementation of both components is greatly influenced and in some cases dictated by the scenario and technology used. While capturing images is usually easily achieved in software that features visualization of the virtual environments, "headless" software running without any visual output may require external software to render images resulting in the CaptureController-component effectively being implemented by software running on two separate systems, increasing the complexity of the implementation.
-\begin{figure}[b]
+\begin{figure}
     \centering
     \includegraphics[width=6cm]{tex/img/ch04/ComponentDiagram_Recording.pdf}
     \captionof{figure}{"Recording"-package}
@@ -105,15 +105,15 @@ The "Recording"-package (Figure \ref{fig:component-diagram-recording}) contains 
 As indicated by the use-cases involved in interacting with scenes (Figure \ref{fig:use-cases}), the "SceneManagement"-package (Figure \ref{fig:component-diagram-scenemanagement}) features multiple components.\\
 The \emph{SceneGeometry}-component holds all 3D objects of a scene that amount to the visual representation and physical bodies of the place the scene is meant to represent. This includes both, objects that feature or lack actual physical collision (e.g. clouds).\\
 A \emph{SceneEntities}-component stores all entities of a scene and manages their life-cycles. In a simple implementation this component could use lists or arrays internally.
-In each scene there is one \emph{MutationManager}-component. It holds a list of all mutators in a scene and, when active, advances only one mutator in a scene at a time so that each possible combination of attribute-mutations is present in a scene at least once. This implicates that each additional mutator added to a scene multiplies the number of steps required to fully step through all attribute-mutations by the number of steps required to step through the new mutator; the number of mutation-steps required to complete a full mutation-cycle grows exponentially.\\
-The MutationManager-component also provides a reset-feature that resets all attribute-mutations to a defined initial state.
-The \emph{WaypointManager}-component holds a list of waypoints where each waypoint constitutes a path by chaining references to other waypoints. Its purpose is to provide an overview of paths configured in scenes.\\
-\begin{figure}[b]
+\begin{figure}[hb!]
     \centering
     \includegraphics[width=8cm]{tex/img/ch04/ComponentDiagram_SceneManagement.pdf}
     \captionof{figure}{"SceneManagement"-package}
     \label{fig:component-diagram-scenemanagement}
 \end{figure}
+In each scene there is one \emph{MutationManager}-component. It holds a list of all mutators in a scene and, when active, advances only one mutator in a scene at a time so that each possible combination of attribute-mutations is present in a scene at least once. This implicates that each additional mutator added to a scene multiplies the number of steps required to fully step through all attribute-mutations by the number of steps required to step through the new mutator; the number of mutation-steps required to complete a full mutation-cycle grows exponentially.\\
+The MutationManager-component also provides a reset-feature that resets all attribute-mutations to a defined initial state.
+The \emph{WaypointManager}-component holds a list of waypoints where each waypoint constitutes a path by chaining references to other waypoints. Its purpose is to provide an overview of paths configured in scenes.
 %
 %\section{Summary}
 %This concept is designed so that it is operating-system-, platform- and framework-agnostic. This results in an abstract concept that describes a basic architecture and abstract components and allows for flexibility in implementations: components may be implemented and run on the same or many separate machines, which is of particular interest for research-facilities that operate large clusters of computers.

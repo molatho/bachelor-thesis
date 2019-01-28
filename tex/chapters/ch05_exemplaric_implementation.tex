@@ -121,9 +121,10 @@ There were few libraries that provide methods to import robots using URDF-files 
 \end{enumerate}
 To solve these problems, a library for parsing URDF-files, \emph{"URDFParser.NET"}, was implemented. The first two problems were solved by implementing a set of interfaces that represent filesystems, directories and files (\ref{fig:filesystem}) for local filesystems and ZIP-archives (using the open-source library \emph{"DotNetZip"} \cite{DotNetZip}) as URDF-files including meshes and textures were usually distributed as ZIP-archives. These interfaces could also be implemented to read files from remote locations such as FTP-servers or websites for future scenarios and use-cases.
 \begin{center}
-\noindent\includegraphics[width=14cm]{tex/img/ch05/URDFParser_FileSystemInterfaces04.png}
-\captionof{figure}{Interfaces for filesystems, directories and files}
-\label{fig:filesystem}
+    \noindent
+    \includegraphics[width=14cm]{tex/img/ch05/URDFParser_FileSystemInterfaces.pdf}
+    \captionof{figure}{Interfaces for filesystems, directories and files}
+    \label{fig:filesystem}
 \end{center}
 Contrary to ROS\#'s approach of interpreting hard-coded XML-elements, in URDFParser.NET parsing the URDF-files was implemented by defining \acp{DTO} for the different URDF-elements. URDF-Files could then be deserialized using these \acsp{DTO} with the \emph{"XmlSerializer"}-class provided by the .NET-Framework \cite{XmlSerializer}.\\
 The third problem with ROS\#'s implementation, faulty behaviour of physical bodies (also called \emph{"rigid bodies"} in the Unity Engine), required manual adjustments to the imported robot models: rearranging the robots' hierarchy so at all times a physical object may have only one physical child object solved robots' inability to move. Ensuring that colliders of physical parts (such as wheels and chassis) did not intersect with each other eliminated the problem of robots spontaneously launching into the air. 
@@ -272,7 +273,7 @@ Unity's camera will have a $36mm \times 24mm$ sensor-size and $20.78mm$ focal-le
         \begin{pmatrix}1 & 0 & 0 \\ 0 & \cos(\beta) & \sin(\beta) \\ 0 & -\sin(\beta) & \cos(\beta)\end{pmatrix} \times
         \begin{pmatrix}0 \\ 0 \\ 1\end{pmatrix}\\
             & = \begin{pmatrix}(-\sin(\alpha)) \cos(\beta) \\ \sin(\beta) \\ \cos(\alpha)\end{pmatrix}\\
-        m   &= || v_f - v_r || = \sqrt{(\sin(\alpha) (-\cos(\beta)))^2 + \sin(\beta)^2 + \cos(\alpha)^2}
+        m   &= || v_f - v_r || = \sqrt{\Big[\sin(\alpha) \big[-\cos(\beta)\big]\Big]^2 + \sin(\beta)^2 + \cos(\alpha)^2}
     \end{split}
 \end{equation}
 
