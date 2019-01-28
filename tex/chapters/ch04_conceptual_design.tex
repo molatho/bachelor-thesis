@@ -7,22 +7,24 @@ This chapter will introduce the terminology, central ideas and architectural bas
 \section{System Environment and Terminology}
 % *** Scenes
 The system features at least one virtual 3D environment (a \emph{scene}) that represents a specific place (either an existing or non-existing place) and a virtual \emph{robot} that operates in said environment. It is used by two groups of users: \emph{designers} and \emph{\ac{AI} engineers}. Figure \ref{fig:use-cases-abstract} shows these groups of users and their high-level and abstract use-cases.
-\begin{center}
-\noindent\includegraphics[width=6cm]{tex/img/ch04/UseCases_HighLevel_01.png}
-\captionof{figure}{High-level Use-Cases}
-\label{fig:use-cases-abstract}
-\end{center}
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=6cm]{tex/img/ch04/UseCases_HighLeve.pdf}
+    \captionof{figure}{High-level Use-Cases}
+    \label{fig:use-cases-abstract}
+\end{figure}
 % *** Robots
 A \emph{virtual robot} is a representation of a real or fictional robot. It is mainly used to navigate a virtual camera used for capturing \emph{records} from the robot's perspective while its movement is restricted by its body's specifics, considering different types of drives (such as limbs or wheels) and their respective attributes (such as degrees of freedom or torque).\\
 % *** Designers
 Scenes need to be created, modeled using geometry, populated with entities and configured. \emph{Designers} set up scenes so that they can be used by \acs{AI} engineers in a production environment. They recreate existing or non-existing places by adding 3D objects and \emph{entities} to scenes. Depending on the specific use of the scene and individual objects in it, designers can add \emph{mutators} to any entities in a scene and equip them with an initial configuration. They can also add waypoints to scenes that constitute paths for robots to travel along.\\
 % *** Records
 A \emph{record} is a data-structure that contains an image and a list of labels. \emph{Labels} hold information about the region in an image that a classifier was identified at. Records may contain meta-data about images, such as the location and view-angles of the camera at the time of capturing the images. This meta-data may prove useful when reconstructing the exact position of robots from generated sets of images. The types asterisked in Figure \ref{fig:classes-record} are placeholders that are implementation-specific.
-\begin{center}
-\noindent\includegraphics[width=8cm]{tex/img/ch04/Classes_Record01.png}
-\captionof{figure}{Data-structure "Record"}
-\label{fig:classes-record}
-\end{center}
+\begin{figure}[b]
+    \centering
+    \includegraphics[width=8cm]{tex/img/ch04/Classes_Record.pdf}
+    \captionof{figure}{Data-structure "Record"}
+    \label{fig:classes-record}
+\end{figure}
 % *** Entities
 \emph{Entities} can be understood as objects in scenes that add more content to a scene than just geometry. Any objects that interact with scenes or other objects within scenes can be understood as entities. This includes light-sources and objects that can be interacted with physically (like doors).
 % *** AI engineers
@@ -30,13 +32,13 @@ A \emph{record} is a data-structure that contains an image and a list of labels.
 % *** Mutators
 In order to provide visual variety to the generated images, \emph{mutators} alter the state of various attributes of entities in scenes in a step-wise fashion. For instance, they can be used to manipulate the intensity, range and color of light-sources, resulting in images that feature different lighting. The amount of steps a mutator needs to perform alterations on before completing a full mutation-cycle depends on the range of values it can assign to attributes. Binary mutators (e.g. used to turn lights on or off) only take two steps to complete a mutation-cycle, more complex mutators may step through arbitrary value ranges though (e.g. dimming light-intensity from 100 to 0 percent in 5 percent steps, requiring 20 steps total). \\
 % *** Waypoints
-\emph{Waypoints} are simple coordinates in the 3D space of a scene that can be used to define paths that robots can travel along. They may hold a reference to another waypoint, allowing designers and \acs{AI} engineers to easily create paths.  
-\begin{center}
-\noindent\includegraphics[width=4cm]{tex/img/ch04/Classes_Waypoint02.png}
-\captionof{figure}{Data-structure "Waypoint"}
-\label{fig:classes-waypoint}
-\end{center}
-
+\emph{Waypoints} (shown in \ref{fig:classes-waypoint}) are simple coordinates in the 3D space of a scene that can be used to define paths that robots can travel along. They may hold a reference to another waypoint, allowing designers and \acs{AI} engineers to easily create paths.  
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=4cm]{tex/img/ch04/Classes_Waypoint.pdf}
+    \captionof{figure}{Data-structure "Waypoint"}
+    \label{fig:classes-waypoint}
+\end{figure}
 The specific design of scenes and robots and the implementation of mutators depend on the scenario that the object-recognition software, that is to be trained, is used in: software run on cars should be trained using images generated in scenes that represent the environment the car is planned to be operated in and the robots used in these scenes should be modeled so they closely represent the car the software is to be run on, considering physical attributes (such as the car's shape, surfaces and size), behaviour (including acceleration, weight and steering)  and sensor-placement, where visual sensors such as cameras are of the highest importance to the process of generating images.
 
 %\begin{center}
@@ -61,11 +63,12 @@ Designers need to import assets (such as 3D models, materials and textures) into
 \acs{AI} engineers may want to configure mutators at run-time in order to explore and study their effects on scenes (such as changes in lighting). Also they may want to add or change waypoints to vary what part of a scene is captured during recording sessions.
 
 Figure \ref{fig:use-cases} summarizes these refinements and shows that most use-cases are interacted with by only one role, separating them into groups of use-cases required for initial setup ("Create ..."), run-time ("Robot" and "Recording" use-cases) and a special group that is used to tweak run-time behaviour to achieve varying sets of records ("Manage Waypoints", "Manage Mutators"). 
-\begin{center}
-\noindent\includegraphics[width=8cm]{tex/img/ch04/UseCases_Fine_01.png}
-\captionof{figure}{Refined Use-Cases}
-\label{fig:use-cases}
-\end{center}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=10cm]{tex/img/ch04/UseCases_Fine.pdf}
+    \captionof{figure}{Refined Use-Cases}
+    \label{fig:use-cases}
+\end{figure}
 \clearpage
 
 %////////////////////////////////////////////////
@@ -73,28 +76,31 @@ Figure \ref{fig:use-cases} summarizes these refinements and shows that most use-
 The abovementioned automatic mode the system can run in (shown in Figure \ref{fig:control-flow}) is used to automate the process of moving robots in scenes, capturing records and mutating scenes.\\
 When active, it will alter a scene by advancing mutation and capture records as long as the mutation-cycle has not been completed. Once the mutation-cycle is completed, the mutation will be reset. If the robot in the scene has not reached its destination yet it will be moved and the process continues by running the mutation-cycle again.\\
 \label{ch04-control-flow}
-\begin{center}
-    \noindent\includegraphics[width=8cm]{tex/img/ch04/ActivityDiagram_HighLevel01.png}
+\begin{figure}[b]
+    \centering
+    \includegraphics[width=8cm]{tex/img/ch04/ActivityDiagram_HighLevel.pdf}
     \captionof{figure}{Control Flow of the automatic mode}
     \label{fig:control-flow}
-\end{center}
+\end{figure}
 This behaviour effectively iterates through all mutations set up for a scene, applies them, captures records for each mutation and does so each time the robots is moved. The only step that is largely independent of implementation is "Reset Mutation" as it will only recover the initial state of all entities in a scene. "Alter Scene", "Capture Record" and "Move Robot" are heavily dependent on the scenario at hand and the specific implementation. For instance, "Move Robot" may either simulate movement of robots by using their physical properties and bodies or simply move them to another position instantly.
 
 %////////////////////////////////////////////////
 \section{Components}
 While the high-level use-cases (Figure \ref{fig:use-cases-abstract}) implicate the need for three high-level components, refinement of the use-cases (Figure \ref{fig:use-cases}) encourages the use of packages to encapsulate complex components. Figure \ref{fig:component-diagram} shows an abstract component used for controlling robots (\emph{RobotController}), a package that provides components needed for capturing records (\emph{Recording}) and another one that contains components used to manage scenes (\emph{SceneManagement}).
-\begin{center}
-\noindent\includegraphics[width=8cm]{tex/img/ch04/ComponentDiagram_System01.png}
-\captionof{figure}{High-level component diagram}
-\label{fig:component-diagram}
-\end{center}
+\begin{figure}[b]
+    \centering
+    \includegraphics[width=8cm]{tex/img/ch04/ComponentDiagram_System.pdf}
+    \captionof{figure}{High-level component diagram}
+    \label{fig:component-diagram}
+\end{figure}
 % Recording
 The "Recording"-package (Figure \ref{fig:component-diagram-recording}) contains two abstract components: \emph{CaptureController} is used to start and stop automatic capturing of records. It captures images and enriches those with labels by making use of the \emph{ImageLabeller}-component. The ImageLabeller-component needs to be able to identify classifiers in images. As neither capturing images nor identifying classifiers are necessarily trivial tasks, the implementation of both components is greatly influenced and in some cases dictated by the scenario and technology used. While capturing images is usually easily achieved in software that features visualization of the virtual environments, "headless" software running without any visual output may require external software to render images resulting in the CaptureController-component effectively being implemented by software running on two separate systems, increasing the complexity of the implementation.
-\begin{center}
-\noindent\includegraphics[width=6cm]{tex/img/ch04/ComponentDiagram_Recording04.png}
-\captionof{figure}{"Recording"-package}
-\label{fig:component-diagram-recording}
-\end{center}
+\begin{figure}[b]
+    \centering
+    \includegraphics[width=6cm]{tex/img/ch04/ComponentDiagram_Recording.pdf}
+    \captionof{figure}{"Recording"-package}
+    \label{fig:component-diagram-recording}
+\end{figure}
 % Scenemanagement
 As indicated by the use-cases involved in interacting with scenes (Figure \ref{fig:use-cases}), the "SceneManagement"-package (Figure \ref{fig:component-diagram-scenemanagement}) features multiple components.\\
 The \emph{SceneGeometry}-component holds all 3D objects of a scene that amount to the visual representation and physical bodies of the place the scene is meant to represent. This includes both, objects that feature or lack actual physical collision (e.g. clouds).\\
@@ -102,11 +108,12 @@ A \emph{SceneEntities}-component stores all entities of a scene and manages thei
 In each scene there is one \emph{MutationManager}-component. It holds a list of all mutators in a scene and, when active, advances only one mutator in a scene at a time so that each possible combination of attribute-mutations is present in a scene at least once. This implicates that each additional mutator added to a scene multiplies the number of steps required to fully step through all attribute-mutations by the number of steps required to step through the new mutator; the number of mutation-steps required to complete a full mutation-cycle grows exponentially.\\
 The MutationManager-component also provides a reset-feature that resets all attribute-mutations to a defined initial state.
 The \emph{WaypointManager}-component holds a list of waypoints where each waypoint constitutes a path by chaining references to other waypoints. Its purpose is to provide an overview of paths configured in scenes.\\
-\begin{center}
-\noindent\includegraphics[width=8cm]{tex/img/ch04/ComponentDiagram_SceneManagement04.png}
-\captionof{figure}{"SceneManagement"-package}
-\label{fig:component-diagram-scenemanagement}
-\end{center}
+\begin{figure}[b]
+    \centering
+    \includegraphics[width=8cm]{tex/img/ch04/ComponentDiagram_SceneManagement.pdf}
+    \captionof{figure}{"SceneManagement"-package}
+    \label{fig:component-diagram-scenemanagement}
+\end{figure}
 %
 %\section{Summary}
 %This concept is designed so that it is operating-system-, platform- and framework-agnostic. This results in an abstract concept that describes a basic architecture and abstract components and allows for flexibility in implementations: components may be implemented and run on the same or many separate machines, which is of particular interest for research-facilities that operate large clusters of computers.
