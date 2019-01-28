@@ -73,29 +73,23 @@
 \addcontentsline{toc}{chapter}{\hsmalistoffigures}
 \listoffigures
 
-% Listingverzeichnis erzeugen
 \cleardoublepage
 \phantomsection
 \addcontentsline{toc}{chapter}{\hsmalistings}
 \lstlistoflistings
 
-% Literaturverzeichnis erzeugen
-\begin{flushleft}
+%\begin{flushleft}
+%\printbibliography
 \printbibliography[heading=subbibliography,title={Bibliography},nottype=online]
 \printbibliography[heading=subbibliography,title={Bibliography (online)},type=online]
-\end{flushleft}
+%\end{flushleft}
 
-% Index ausgeben. Wenn Sie keinen Index haben, entfernen Sie einfach
-% diesen Teil.
 \cleardoublepage
 \phantomsection
 \addcontentsline{toc}{chapter}{\hsmaindex}
 \printindex
 
-% Anhang. Wenn Sie keinen Anhang haben, entfernen Sie einfach
-% diesen Teil.
 \appendix
-\input{tex/chapters/attachment-a.tex}
-\input{tex/chapters/attachment-b.tex}
+\input{tex/chapters/appendix.tex}
 
 \end{document}

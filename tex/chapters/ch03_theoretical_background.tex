@@ -1,12 +1,3 @@
-%////////////////////////////////////////////////
-% ToDo:
-% 3D: Meshes, Materials, Textures, UV
-% Game Engines
-% Renderers (Blender)
-% URDF
-%////////////////////////////////////////////////
-
-
 \chapter{Theoretical Background}
 This chapter will give a theoretical background for the technologies and techniques used in the subsequent chapters. It will provide a brief overview of the architecture and working principle of \acp{CNN}. Then, certain selected topics from 3D graphics are presented that give an understanding of principles that are used in this thesis. Lastly, this chapter will present fundamentals about game engines and robotics.
 
@@ -24,14 +15,14 @@ Lastly, at end of a \ac{CNN} will be one or more \ac{fc} layers. Those translate
 Figure \ref{fig:lenet5} shows the architecture of LeNet5 by LeCun \textit{et al.} \cite{Lecun98gradient-basedlearning} from 1998. It should prove to set a pattern for modern \acp{CNN} by utilizing multiple sets of \ac{conv}, non-linearity and pooling layers, forwarding their processed data to multiple layers for classification. One of its successors is AlexNet, designed by Alex Krizhevsky \textit{et al.} in 2010 \cite{NIPS2012_4824} which is still a relevant measure for modern \ac{NN} today \cite{DBLP:journals/corr/CanzianiPC16}.
 
 \begin{center}
-\noindent\includegraphics[width=12cm]{tex/img/ch03/LeNet5.png}
+\noindent\includegraphics[width=12cm]{tex/img/ch03/LeNet5.pdf}
 \captionof{figure}[Architecture of LeNet5]{Architecture of LeNet5 that set a pattern for modern \acp{CNN} \cite{Lecun98gradient-basedlearning}}
 \label{fig:lenet5}
 \end{center}
 
 \subsection{Data Augmentation}
 In summary it can be stated that \ac{conv} layers are trained to detect features and \ac{fc} layers are trained to detect relations between features that indicate specific classifiers. To achieve this, \acp{CNN} need to be trained with datasets specific to their application that must be of good quality \cite{Schweitzer2017}. Factors contributing to the quality of datasets are the quality of their images (e.g. high resolution, little noise) and labels (e.g. number of classes, general presence of regions associated with labels). However large sets of such data may be hard to come by due to scarce availability (e.g. of datasets for highly specialized applications) or the amount of effort creating those takes. Lastly, they may simple cost a lot of time to produce.\\
-\textit{Data Augmentation} promises to solve this problem by altering datasets through application of various operations on them: for instance images can be stretched, mirrored, zoomed and rotated or color filters can be applied to them. As long as these changes are transferred to the labels of images, these altered datasets drastically increase the size of datasets that can be used for training \acp{CNN}. This can also potentially help to make detections more reliable for special cases: for instance, datasets that feature cars would mostly show cars in their surroundings, hence they would rarely be cut off in images. Altering images so they cut off parts of cars like wheels may enable \acp{CNN} to recognize cars without requiring cars to actually have wheels.
+\emph{Data Augmentation} promises to solve this problem by altering datasets through application of various operations on them: for instance images can be stretched, mirrored, zoomed and rotated or color filters can be applied to them. As long as these changes are transferred to the labels of images, these altered datasets drastically increase the size of datasets that can be used for training \acp{CNN}. This can also potentially help to make detections more reliable for special cases: for instance, datasets that feature cars would mostly show cars in their surroundings, hence they would rarely be cut off in images. Altering images so they cut off parts of cars like wheels may enable \acp{CNN} to recognize cars without requiring cars to actually have wheels.
 \clearpage
 
 \section{Transforms}
@@ -193,9 +184,12 @@ In order to enable more powerful effects, materials need to be able to map each 
 Figure \ref{fig:3d-cube-uv-mapping} shows the UV-map of a cube and a texture laid over it. The texture is wrapped around the cube so that each side shows a number contained within the texture.
 
 \begin{center}
-\noindent\includegraphics[width=12cm]{tex/img/ch03/CubeUVMapping.png}
-\captionof{figure}[UV-map of a cube]{UV-map of a cube on top of a texture}
-\label{fig:3d-cube-uv-mapping}
+%\begin{figure}[t]
+%\centering
+    \noindent\includegraphics[width=12cm]{tex/img/ch03/CubeUVMapping.png}
+    \captionof{figure}[UV-map of a cube]{UV-map of a cube on top of a texture}
+    \label{fig:3d-cube-uv-mapping}
+%\end{figure}
 \end{center}
 
 \subsection{Rendering}
@@ -211,37 +205,27 @@ Raytracing is used in software like \emph{Blender} that aims to produce physical
 Then the geometry is rasterized: polygons are translated to individual pixels in the \emph{frame buffer}. By performing a so called \emph{depth test} for each pixel, only the geometry that is nearest to the camera will be drawn for an individual pixel.
 Lastly, resulting the pixels are passed through a \emph{pixel shader} that may implement various effects of texture maps described in \ref{ch03-materials} such as normal maps and specular maps. They may also manipulate the \emph{z-buffer} that is used to store depth information. When at later stages textures are passed to pixel shaders, they may manipulate the textures by applying two-dimensional effects like blur.\\
 \emph{Post-processing} is often done in vertex and pixel shaders and allows to apply effects to the scene that require information about the entire image, such as \emph{anti-aliasing} (used to smooth out hard edges), \emph{bloom} (glow of light seen in real cameras) and blur (e.g. \emph{motion blur} and blur caused by depth in images that is out of focus, \emph{depth of field}).
+\clearpage
 
 % //////////////////////////////////////////////////
 \section{Game Engines}
-Game engines are software environments that provide a set of components that allows to create and run video games. They feature a \emph{rendering} and \emph{audio engine} used for audio and visual output and a \emph{physics engine} to simulate aspects of physics such as gravity and collision. Many also feature a so called \emph{game loop} that orchestrates these engines and processes a game's logic.
+Game engines are software environments that provide a set of components that allows to create and run video games. They feature a \emph{rendering} and \emph{audio engine} used for audio and visual output and a \emph{physics engine} to simulate aspects of physics such as gravity and collision. Most feature a so called \emph{game loop} that orchestrates these engines and processes a game's logic (shown in Figure \ref{fig:game-loop}). One cycle of this loop is commonly referred to as a \emph{frame}. Depending on the implementation of the game loop, a game may enter an idle state after rendering to limit the amount of \ac{FPS} or update the scene multiple times per frame at times when updates are required in rapid succession. It may also skip rendering when rendering takes too long and updates need to be processed (\emph{frame skipping}).
 
-\begin{center}
-\noindent\includegraphics[width=4cm]{tex/img/ch03/GameLoop_04.pdf}
-\captionof{figure}{A simple game loop}
-\label{fig:game-loop}
-\end{center}
+\begin{figure}[t]
+    \centering
+    \noindent\includegraphics[width=4cm]{tex/img/ch03/GameLoop_04.pdf}
+    \captionof{figure}{A simple game loop}
+    \label{fig:game-loop}
+\end{figure}
 
 \subsection{Development Tools}
+The tools used in the development process of games is heavily dependent on the game engine that was used. While some feature a set of command-line tools to pack resources, build folder structures and compile binary executable files, others combine all of these features into one software-suite. \emph{World building} is an essential task in game development and also differs greatly in implementation across game engines: the \emph{Source Engine} (powering \emph{"Half-Life 2"} by \emph{Valve}) requires level designers to use an editor to create scenes (\emph{maps}) and compile them into a proprietary format which is then parsed by the engine at run-time \cite{SourceHammerEditor}. Others, like the \emph{Unreal Engine} (powering \emph{"Life is Strange"} by \emph{Dontnod Entertainment}) and the \emph{Unity Engine} (powering \emph{"Ghost of a Tale"} by \emph{Lionel Gallat}) feature all-in-one editors that combine management of assets and world building \cite{UnrealLevelEditor}\cite{UnityDocsOverview}.
 
-
-\subsection{Implementing Logic}
-While game engines handle sophisticated tasks like rendering and simulating physics on their own, logic is implemented by game developers. There are different ways to implement logic and this section will focus on two approaches that are widely used.
+\subsection{Adding Logic to a Game}
+While game engines handle sophisticated tasks like rendering and simulating physics on their own, logic is implemented by game developers. There are different ways to add logic to games and this section will focus on two approaches that are widely used.
 
 \subsubsection{Object Oriented Programming}
-
+A traditional approach to enriching entities in scenes with logic is \emph{\ac{OOP}}. In this approach, entities inherit from a base class that holds basic information (e.g. the entity's transform and name) and provides functions used by the engine and other classes that may be overridden (e.g. methods to draw or update the entity). This approach usually works fine for high-level components that manage entities or scenes, however it often involves inheriting multiple classes and when used at a lower level (e.g. on single entities), this results in very complex classes. In scenarios where multiple inheritance is not possible (due to programming language limitations), interfaces may be used. However implementing interfaces multiple times leads to code duplication. Also, behaviours and functionalities are fixed parts of implementations.
 
 \subsubsection{Entity-Component-System}
-
-
-%- Definition
-%- Overview
-%- Concepts
-%- Workflow
-
-% //////////////////////////////////////////////////
-\section{Robotics}
-% Nur benötigtes
-\subsection{Types of Drives}
-\subsection{Unified Robot Description Format}
-\ac{URDF} [TBD]
+A common solution to the problems introduced by inheritance in \ac{OOP} is to shift the implementation of interfaces to other classes and make use of composition. \emph{\acp{ECS}} aim to shift the focus from entities as programmable units towards isolated components that represent behaviours. Following the emph{single responsibility principle}, each component is meant to serve and implement a single use. This results in high re-usability of components and reduces code duplication. In \acp{ECS}, entities usually hold a list of components and hence, contrary to \ac{OOP}, entities may have components added to or removed from them at run-time. 
