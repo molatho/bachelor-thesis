@@ -1,4 +1,4 @@
-\chapter{Exemplaric Implementation Using Game Engines as Renderers and Frontends}
+\chapter{Implementation Using Game Engines as Renderers and Frontends}
 \label{chap:implementations}
 In this chapter the concept presented in \ref{chap:conceptual-design} will be implemented using a game engine as renderer and frontend. After a brief overview of the goals and constraints of this specific implementation, it will look into reasons why games engines are suited for implementing the concept and how one was chosen for this implementation. Analogue to the steps described in the concept, this chapter will show how an existing environment was reconstructed to be used as a scene and how a robot was imported into this scene and optimized to work in the game engine. Further, it will show how mutators were implemented and used in the scene and compare different approaches to identifying objects. Lastly, this chapter shows how records were saved and how this implementation performed during recording sessions.
 
@@ -29,7 +29,7 @@ New rendering-technologies that improve the quality of rendered images and perfo
 The decision which game engine to use to implement the concept was based on a set of factors (inspired by criteria defined by Cowan \textit{et al.} \cite{6901570}) that needed to be considered:
 \begin{description}
 \item [Stability] While the goal of using game engines as real-time renderers is to generate records quickly, recording sessions may take several hours. The software needs to maintain stable operation because recording sessions may run un-supervised and crashes may be detected only hours later.
-\item [Crossplatform] Support of multiple platforms serves multiple purposes. First it aims to avoid platform-specific problems that may either be already existent or yet to come. Operating-system updates can cause software to malfunction as was recently seen with multiple updates of the Windows operating system \cite{heiseWindowsUpdate}. Secondly, supporting multiple platforms greatly extends the potential groups of users. Users that own licenses for proprietary operating systems will be able to run the software on their current systems while users that lack licenses to proprietary operating systems may chose a free operating system. The third and very important aspect of crossplatform-capabilities is that developers only need to implement code specific to a game but no code specific to platforms. This allows to compile a game for multiple platforms without spending any time on the target platforms' specifics.
+\item [Crossplatform] Support of multiple platforms serves multiple purposes. First it aims to avoid platform-specific problems that may either be already existent or yet to come. Operating system updates can cause software to malfunction as was recently seen with multiple updates of the Windows operating system \cite{heiseWindowsUpdate}. Secondly, supporting multiple platforms greatly extends the potential groups of users. Users that own licenses for proprietary operating systems will be able to run the software on their current systems while users that lack licenses to proprietary operating systems may chose a free operating system. The third and very important aspect of crossplatform-capabilities is that developers only need to implement code specific to a game but no code specific to platforms. This allows to compile a game for multiple platforms without spending any time on the target platforms' specifics.
 \item [Features] As this thesis' concept aims to generate labelled images of excellent quality, the game engine used for rendering said images must feature rendering capabilities that produce realistic output. This requires extensive support of post-processing features like ambient occlusion, anti-aliasing, depth-of-field and other shading-techniques.
 \item [Maintenance] Software is expected to be operable for a certain period. While games may run on modern systems for few years, programs used in sophisticated fields of use like research aim to be used and developed further for many years. Programming those comes at considerable development cost which is why one important factor is the expected time a game engine enables software to run on modern systems. One way to evaluate this factor is to study when a game engine was first publicly announced, what games are being published that use the engine and in what intervals it is updated. Dependencies introduced by game engines further add to potential problems with software becoming outdated and unable to use on modern systems. 
 \item [Licensing] Like most other software, game engines are usually distributed with licenses that specify under what conditions and for which purposes they may be used. Many engines that power popular games today are exclusive to their developer studios or publishers and are not available for public use (e.g. \emph{EA DICE}'s exclusive \emph{Frostbite} that powers the \emph{Battlefield} game-series or \emph{id Software LLC}'s exclusive \emph{id Tech 6} which \emph{Doom (2016)} was based on). Contrary to those, some modern proprietary game engines may be used for free for educational or private use (such as the CryEngine, Unity Engine and Unreal Engine).
@@ -47,7 +47,7 @@ After evaluating modern and popular game engines considering the abovementioned 
 
 %////////////////////////////////////////////////
 \section{Designer: Building the Scene}
-\subsection{Rebuilding a real environment}
+\subsection{Rebuilding a Real Environment}
 As stated in \ref{section:goals-and-constraints} the environment used to base the scene on was the second floor of building "A" of University of Applied Sciences Mannheim. However at this time no 3D model of the floor, let alone the building existed so it had to be handcrafted using the resources that were available: a floor plan (shown in Figure \ref{fig:floor-plan-image}) and measurements taken by hand.
 
 \begin{figure}[htp]
@@ -70,13 +70,11 @@ As stated in \ref{section:goals-and-constraints} the environment used to base th
     \caption{Floor plan, photo (\ref{fig:floor-plan-image}) and reconstruction in Blender (\ref{fig:floor-plan-blender})}
 \end{figure}
 
-Figure \ref{fig:floor-plan-blender} shows the reconstruction of the basic layout of the floor in the 3D modeling software Blender. As the goal of this implementation was to generate records used for detecting doors, special attention had to be paid to modeling the doors in this floor. This required taking measures of the doors themselves, their handles and frames as well as reconstruction of the properties of their surfaces. Figure \ref{fig:doors} shows the various doors present on this floor: office doors (shown in \ref{fig:door01} featured metallic handles, a black and matte metal surface and were broader than most other doors. Doors to lecture rooms (\ref{fig:door02}) had blue matte metal surfaces and were not on the same level as the walls but inset into the walls. They also had glass-panels located right above them. The portals (\ref{fig:door03}) to the hallway that lead to the lecture rooms, one present at each end of the hallway, had glass doors and panels and matte black metal beams and frames. Lastly there were doors to storage rooms (\ref{fig:door04}) that did not feature great geometrical detail as the other doors did. They blended into the wall and featured knobs and hinges that were noticeably shiny.
-
 \begin{figure}[htp]
     \sbox\twosubbox{%
       \resizebox{12cm}{!}{%
-        \includegraphics[height=6cm]{tex/img/ch05/Door01_small.JPG}%
-        \includegraphics[height=6cm]{tex/img/ch05/Door02_small.JPG}%
+        \includegraphics[height=3cm]{tex/img/ch05/Door01_small.JPG}%
+        \includegraphics[height=3cm]{tex/img/ch05/Door02_small.JPG}%
       }%
     }
     \setlength{\twosubht}{\ht\twosubbox}
@@ -97,16 +95,17 @@ Figure \ref{fig:floor-plan-blender} shows the reconstruction of the basic layout
     \label{fig:doors}
 \end{figure}
 
-The reconstructed doors could now be used to render very detailed door meshes with realistic surfaces. However other objects also had to be reconstructed: as lighting would have great influence on generated images, large window facades that cover the building's exterior and feature blinds were added to the scene. A set of other common objects present in the floor like lamps and air-conditioning pipes on the ceiling, radiators and tables were also reconstructed.\\
+Figure \ref{fig:floor-plan-blender} shows the reconstruction of the basic layout of the floor in the 3D modeling software Blender. As the goal of this implementation was to generate records used for detecting doors, special attention had to be paid to modeling the doors in this floor. This required taking measures of the doors themselves, their handles and frames as well as reconstruction of the properties of their surfaces. Figure \ref{fig:doors} shows the various doors present on this floor: office doors (shown in \ref{fig:door01}) featured metallic handles, a black and matte metal surface and were broader than most other doors. Doors to lecture rooms (\ref{fig:door02}) had blue matte metal surfaces and were not on the same level as the walls but inset into the walls. They also had glass-panels located right above them. The portals (\ref{fig:door03}) to the hallway that lead to the lecture rooms, one present at each end of the hallway, had glass doors and panels and matte black metal beams and frames. Lastly there were doors to storage rooms (\ref{fig:door04}) that did not feature great geometrical detail as the other doors did. They blended into the wall and featured knobs and hinges that were noticeably shiny.\\
+The reconstructed doors could now be used to render very detailed door meshes with realistic surfaces. However other objects also had to be reconstructed: as lighting would have great influence on generated images, large window facades that cover the building's exterior and feature blinds were added to the scene. A set of other common objects present in the floor like lamps and air-conditioning pipes on the ceiling, radiators and tables were also reconstructed. For the reconstruction of the ceiling and floor tiles photos were taken of the actual tiles. They were further prepared for use in Blender and Unity by removing perspective distortion and scaling the resulting textures so they would allow infinite tiling. Normal maps automatically generated from the gray scale color of these textures added visual detail to these surfaces.\\
 Figure \ref{fig:unity-scene-a205} shows the final reconstruction of room \emph{"A205"} which is the first room on the second floor of the building. It features windows with blinds that cast shadows on the walls and objects and it features obstacles (such as tables) that may occlude other objects of interest such as the blue door. The reconstructed room does not feature any chairs, even though there were chairs present in the real room. They were left out to enable robots to navigate through the room easily without having to take care of maneuvering in tight spaces between chairs. However chairs would have contributed to making the room appear more realistic as chairs may have occluded objects of interest and added to the complexity and variety of the scene overall.
 
-\begin{figure}[t]
-    \centering
-    %\noindent
+\begin{center}%[t]
+    %\centering
+    \noindent
     \includegraphics[width=12cm]{tex/img/ch05/UnitySceneA205_02.png}
     \captionof{figure}{Reconstruction of room A205 in Unity Editor}
     \label{fig:unity-scene-a205}
-\end{figure}
+\end{center}
 
 %////////////////////////////////////////////////
 \subsection{Adding Robots to the Scene}
@@ -130,7 +129,7 @@ Contrary to ROS\#'s approach of interpreting hard-coded XML-elements, in URDFPar
 The third problem with ROS\#'s implementation, faulty behaviour of physical bodies (also called \emph{"rigid bodies"} in the Unity Engine), required manual adjustments to the imported robot models: rearranging the robots' hierarchy so at all times a physical object may have only one physical child object solved robots' inability to move. Ensuring that colliders of physical parts (such as wheels and chassis) did not intersect with each other eliminated the problem of robots spontaneously launching into the air. 
 
 \subsubsection{Controlling Robots}
-Robots imported into Unity needed to be controllable by \ac{AI} engineers. This could be done in different ways. with some of those depending on the type of drive a specific robot featured:
+Robots imported into Unity needed to be controllable by \ac{AI} engineers. This could be done in different ways. some of those depending on the type of drive a specific robot featured:
 \begin{description}
     \item [Wheel Drives] Robots may feature wheel-joints that can rotate on their local $x$ and $y$ axis. Rotating a wheel's $y$ axis allows to use it for steering while applying torque to its $x$ axis would move it and its connected bodies across surfaces, just like real-world wheels work. This technique can be used for most wheeled robots by limiting rotation of the $y$ axis to wheels that should not steer (e.g. the rear wheels of motor cycles).
     \item [Connected Limbs] Limbs of robots can be connected using hinge joints that allow rotating connected bodies along one or more axis. Most industrialized robots feature three or more controllable axis and could be implemented in Unity by connecting two limbs via one hinge-joint each, allowing movement in one axis. Industrialized robots operate from a fixed position in 3D space.
@@ -140,7 +139,7 @@ While simulating wheel drives, connected limbs and legged movement is possible i
 \begin{itemize}
     \item Wheel drives can be reconstructed by wheel joints that allow for rotation in the $x$ and $y$ axis, however they do not require force directly applied to them for rotation . Applying directed force at a robot's body for acceleration and deceleration and applying torque force for turning would indirectly affect the wheels and thus fabricate the illusion of real wheel drives. 
     \item Connected limbs can be imitated by creating a parent-child hierarchy for each connected limb. Making use of Unity's transforms, child limbs of parent limbs will directly be affected by any change to the parent's transform: for instance, rotating the base limb of a robot arm would also effectively move all of its child limbs with it.
-    \item Legged movement would be the hardest do fabricate in a way that behaves realistic. Most game engines feature animation systems that allows for replaying, looping and blending animations of complex body parts, resulting in movement that looks realistic. However it would not necessarily behave realistically as individual legs colliding with obstacles could lead to the whole body being moved, ignoring the friction of the other legs of a robot that may have contact to a surface and thus restrict movement of the robot's body.
+    \item Legged movement would be the hardest to fabricate in a way that behaves realistic. Most game engines feature animation systems that allows for replaying, looping and blending animations of complex body parts, resulting in movement that looks realistic. However it would not necessarily behave realistically as individual legs colliding with obstacles could lead to the whole body being moved, ignoring the friction of the other legs of a robot that may have contact to a surface and thus restrict movement of the robot's body.
 \end{itemize}
 
 Figure \ref{fig:pioneer3at} shows a "Pioneer 3AT" robot imported into Unity. The green cylinders represent the colliders of its wheels and it lacks any other colliders. Its only rigid body that had any mass and was simulated for gravity was its chassis. This combination of a single rigid body and one cylindrical collider for each wheel enabled the robot to appear and behave close to a real robot in the scene as neither collision with its chassis nor mass of its wheels were necessary for maneuvering it in the scene. Its wheels would turn when force is applied to its rigid body.
@@ -223,10 +222,10 @@ Another problem was determining how to create the points on colliders to test fo
 Solving this problem would require dynamically generating points on colliders, taking the shape and scale of an object into account.
 
 % ** Raycasting
-\subsection{Approach II: Casting Rays from screen space}
+\subsection{Approach II: Casting Rays From Screen Space}
 After using raycasting on every object in the first approach raised performance-concerns, an alternative solution needed to be found. Ideally, a second approach should take the same time to test for visible objects on screen each time it was run and not be influenced by the total amount of objects in a scene.\\
 The second approach to identifying objects on images aimed to imitate how humans would process captured images: humans would actually exclusively look at the images presented to them as no other information would be available to them. They may not know about all the other objects in a scene that are not visible in an image and they would most likely not recognize distant objects in images very well due to how few pixels would accommodate for them.\\
-Therefore the algorithm implemented in this approach (shown in algorithm \ref{algo:raycasting-screenspace}) scanned the scene from the active camera's perspective in a grid-like fashion. It would use the camera an image was taken with, the \emph{scan-resolution} that defined how many rays it would cast horizontally and vertically and the screen-resolution in pixels and then cast rays that originated from the camera's origin and went through points in screen space, going from top to bottom and left to right (shown in Figure \ref{fig:rclabelling02}). If a cast hit a collider [of a tagged object] it would check whether the same object was already hit before and retrieve a rectangle associated with the object, or create a new rectangle for the object. This rectangle would be extended so that it would contain the screen-coordinate that was used to cast the ray. Once the algorithm finished casting rays it would return a map with rectangles describing regions on screen covered by a single object each associated with their corresponding object (seen in Figure \ref{fig:rclabelling05}). By defining a threshold of the minimum size rectangles needed to be, too small rectangle were discarded, allowing to effectively skip objects that were either too far away from the camera or occluded.\\
+Therefore the algorithm implemented in this approach (shown in algorithm \ref{algo:raycasting-screenspace}) scan-ned the scene from the active camera's perspective in a grid-like fashion. It would use the camera an image was taken with, the \emph{scan-resolution} that defined how many rays it would cast horizontally and vertically and the screen-resolution in pixels and then cast rays that originated from the camera's origin and went through points in screen space, going from top to bottom and left to right (shown in Figure \ref{fig:rclabelling02}). If a cast hit a collider [of a tagged object] it would check whether the same object was already hit before and retrieve a rectangle associated with the object, or create a new rectangle for the object. This rectangle would be extended so that it would contain the screen-coordinate that was used to cast the ray. Once the algorithm finished casting rays it would return a map with rectangles describing regions on screen covered by a single object each associated with their corresponding object (seen in Figure \ref{fig:rclabelling05}). By defining a threshold of the minimum size rectangles needed to be, too small rectangle were discarded, allowing to effectively skip objects that were either too far away from the camera or occluded.\\
 \begin{figure}[htp]
     % preliminary
     \sbox\twosubbox{%
@@ -265,10 +264,10 @@ Therefore the algorithm implemented in this approach (shown in algorithm \ref{al
 In practice, these rectangles usually would not fully cover objects which is why in the implementation of the algorithm, an option was added to extend the width and height of the rectangles by an adjustable factor, resulting in rectangles that fully covered objects and even included neighbouring area (like parts of the ceiling, wall and floor in Figure \ref{fig:rclabelling06}). Including neighbouring areas in these rectangles adds context to the found objects that may contribute to the quality of detection of object-recognition software. For doors, in this implementation this factor was set to $1.5 \times 1.3$ for width and height, respectively, to accommodate for the distinctive shape of doors.\\
 The scan-resolution effectively determines the level of detail that should be detected at which distance and the position of its rays depend on the horizontal and vertical field of view of the camera that is used. The vertical and horizontal field of view of a given camera can be calculated using the focal-length $f$ and sensor-size $d$ (provided by Unity's \emph{physical camera} feature) and the general formula for calculating the angle of view \cite{WikipediaAngleOfView}:
 \begin{equation}\alpha = 2 \arctan(\frac{d}{2f})\end{equation}
-Unity's camera will have a $36mm \times 24mm$ sensor-size and $20.78mm$ focal-length by default, resulting in a field of view of $82 \times 60$ degrees horizontally and vertically. The maximum distance between two rays being one meter from the camera can be determined by calculating the distance $m$ between any unit-vector (e.g. $v_f = (0, 0, 1)^T$) and the same vector with a rotation along the $y$ and $x$ axis by the scan-resolution $r$ applied to it:\\
+Unity's camera will have a \SI{36}mm $\times$ \SI{24}{mm} sensor-size and \SI{20.78}{mm} focal-length by default, resulting in a field of view of $82 \times 60$ degrees horizontally and vertically. The maximum distance between two rays being one meter from the camera can be determined by calculating the distance $m$ between any unit-vector (e.g. $v_f = (0, 0, 1)^T$) and the same vector with a rotation along the $y$ and $x$ axis by the scan-resolution $r$ applied to it:\\
 \begin{equation}
     \begin{split}
-        \alpha & = \frac{x_f}{x_r}, \beta = \frac{y_f}{y_r}\\
+        \alpha & = x_f / x_r, \beta = y_f / y_r\\
         v_r & = \begin{pmatrix}\cos(\alpha) & 0 & -\sin(\alpha) \\ 0 & 1 & 0 \\ \sin(\alpha) & 0 & \cos(\alpha)\end{pmatrix} \times
         \begin{pmatrix}1 & 0 & 0 \\ 0 & \cos(\beta) & \sin(\beta) \\ 0 & -\sin(\beta) & \cos(\beta)\end{pmatrix} \times
         \begin{pmatrix}0 \\ 0 \\ 1\end{pmatrix}\\
@@ -296,19 +295,30 @@ To verify the correctness of the output generated by \ac{VERE} an application wa
 %////////////////////////////////////////////////
 \section{Performance of the Software}
 There were several factors that had an impact on \ac{VERE}'s performance. Aside from the configurable parameters (scan resolution and screen or image resolution), the hardware \ac{VERE} would run on limited its performance. Contrary to regular games it did not only render frames to screen but captured an image each frame and saved it along with meta data. Rendering frames utilized the GPU while casting rays to identify objects was performed on the CPU. Lastly, saving the records to disk required a drive that handled writing multiple files in short intervals well.\\
-To test \ac{VERE} it was run on a machine with a \textit{Intel i5-2310} CPU, \textit{NVIDIA GeForce GTX 760} GPU and a \textit{Kingston A400} SSD.
+To test \ac{VERE} it was run on two machines with different hardware:
+\begin{itemize}
+    \item Machine \#1 featured a \textit{Intel i5-2310} CPU, \textit{NVIDIA GeForce GTX 760} GPU and a \textit{Kingston A400} SSD.
+    \item Machine \#2 featured a \textit{AMD Ryzen 7 1700X} CPU, \textit{NVIDIA GeForce GTX 1080} GPU and a \textit{Western Digital WDS512G1X0C} M.2 SSD.
+\end{itemize}
 Table \ref{table:vere-performance} shows how \ac{VERE} performed on this hardware in automatic mode (shown in detail in section \ref{ch04-control-flow}), completing three mutation-cycles with images using a very low resolution ($640 \times 360$ pixels), a common resolution used in modern monitors ($1920 \times 1080$ pixels, commonly referred to as \textit{"Full HD"} and \textit{"1080p"}) and a very high resolution that is used in modern high end displays (also known as \textit{"4K UHD"} and \textit{"4K"}). The scan resolution chosen was $200 \times 50$.
 
-\begin{table}[htbp]
+\newcommand{\minitab}[2][l]{\begin{tabular}{#1}#2\end{tabular}}
+
+\begin{table}[htp]
     \centering
     \begin{tabular}{c|c|c|c|c|c|c}
-        \hline
-              \thead{Image\\Resolution} & \thead{Cycle \#1 (s)} & \thead{Cycle \#2 (s)} & \thead{Cycle \#3 (s)} & \thead{Cycle\\Average (s)} & \thead{Captures \textbackslash s} \\
-        \hline
-            $640 \times 360$ & 49.64 & 53.97 & 51.41 & 51.67 & 18.79 \\
-            $1920 \times 1080$ & 260.32 & 272.01 & 287.14 & 273.16 & 3.55 \\
-            $3840 \times 2160$ & 871.69 & 903.18 & 899.74 & 891.54 & 1.09 \\
+        \toprule
+              \thead{$Machine$} & \thead{$Image$\\$Resolution$} & \thead{$Cycle \#1 (s)$} & \thead{$Cycle \#2 (s)$} & \thead{$Cycle \#3 (s)$} & \thead{$Cycle$\\$Average (s)$} & \thead{$Captures$ \textbackslash $s$} \\
+        \midrule
+            \multirow{3}*{\#1} & $640 \times 360$ & 49.64 & 53.97 & 51.41 & 51.67 & 18.79 \\
+            & $1920 \times 1080$ & 260.32 & 272.01 & 287.14 & 273.16 & 3.55 \\
+            & $3840 \times 2160$ & 871.69 & 903.18 & 899.74 & 891.54 & 1.09 \\
+        \midrule
+            \multirow{3}*{\#2} & $640 \times 360$ & 39.94 & 41.64 & 39.67 & 40.42 & 24.02 \\
+            & $1920 \times 1080$ & 149.33 & 142.25 & 144.77 & 145.45 & 6.68 \\
+            & $3840 \times 2160$ & 501.56 & 526.10 & 537.65 & 521.77 & 1.86 \\
+        \bottomrule
     \end{tabular}
-    \caption[Comparison of recording sessions]{Comparison of recording sessions with different image resolutions}
+    \caption[Comparison of recording sessions]{Recording sessions with different image resolutions on different machines}
     \label{table:vere-performance}
 \end{table}

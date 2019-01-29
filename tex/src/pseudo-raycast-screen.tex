@@ -6,7 +6,7 @@
     \Output{Findings}
     \BlankLine
     \StepSize $\leftarrow$ \Vector{$\dfrac{wScreen}{wScan}, \dfrac{hScreen}{hScan}$}\;
-    \Findings $\leftarrow$ \Map{} \tcc*[r]{Maps colliders to rectangles}
+    \Findings $\leftarrow$ \Map{}\;
     
     \For{$x \leftarrow 0$ \KwTo $wScan + 1$} {
         \For{$y \leftarrow 0$ \KwTo $hScan + 1$} {
@@ -27,4 +27,5 @@
     }
     \KwRet{\Findings}
     \caption{Raycasting from screen-space}\label{algo:raycasting-screenspace}
+    \SetAlCapSkip{1em}
 \end{algorithm}

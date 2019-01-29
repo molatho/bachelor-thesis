@@ -1,33 +1,15 @@
 \chapter{Summary}
+\label{chap:summary}
 This chapter summarizes the concept presented in Chapter \ref{chap:conceptual-design} and the implementation thereof shown in Chapter \ref{chap:implementations}.
-% NUR kürzere Darstellung, keine Bewertung
 
 \section{Concept}
 The concept presented in \ref{chap:conceptual-design} describes a software environment that has a virtual environment and robot at its core. Two groups of users interact with this system: designers create and configure scenes and objects therein while \ac{AI} engineers execute the software to navigate virtual robots and generate sets of records that are composed of images and a set of located classes. To generate diverse sets of images, mutators are added to objects in the scene. These alter attributes of objects such as light intensity. The concept assumes that certain tasks are specific to implementations such as capturing images and identifying objects in captured images. Furthermore, it defines two modes of operations that \ac{AI} engineers can enter: a manual mode allows them to navigate robots themselves while an automatic mode can be entered to have a robot ride along paths capturing images.\\
-The concept deduces components from the abovementioned activities and provides a basic software architecture that specific implementations shall comply with. It is designed to be operating-system-, platform- and framework-agnostic.
-% Scene + Robot
-% Rollen und deren Aufgaben
-% Mutators
-% Waypoints
-% Automatic Mode
-% Identifying objects
+The concept deduces components from the abovementioned activities and provides a basic software architecture that specific implementations shall comply with. It is designed to be operating system, platform and framework agnostic.
 
 \section{Implementation}
 Chapter \ref{chap:implementations} shows an exemplaric implementation of the aforementioned concept under the working title "\ac{VERE}". The chapter starts with explanation why VERE makes use of game engines to implement the concept and how a game engine can be chosen for a specific scenario by evaluating certain criteria. For this implementation the Unity Engine was used because of its feature-rich editor, free use for educational purposes and its crossplatform-capabilities.\\
-The environment used in the scene was the second floor of building "A" of the University of Applied Sciences Mannheim and was reconstructed using Blender and imported into Unity along with common objects present in the floor such as ceiling lights, radiators and desks. Based on another thesis that implemented object detection of doors, the goal of this implementation is to generate images of doors. Therefore special attention was paid to reconstruction of these doors.\\
+The environment used in the scene was the second floor of building "A" of the University of Applied Sciences Mannheim and was reconstructed using Blender and imported into Unity along with common objects present in the floor such as ceiling lights, radiators and desks. Based on another thesis that implemented object detection of doors, the goal of this implementation is to generate images of those. Therefore special attention was paid to their reconstruction.\\
 The robot that was used in the scene was the "Pioneer 3AT" wheeled robot. To import it into the Unity scene, a custom parser for \ac{URDF} files was written and used in conjunction with an existing open-source solution that assembled the individual parts of the robot from the interpreted files in the scene. The chapter presents several ways to control robots in Unity and states that a non-realistic control was used because realistic movement was not of high priority in the scenario.\\
 Special classes of mutators were implemented to group mutators and allow for different ways to advance mutations: ParallelMutators advance several mutators at once while MultiMutators iterate through all combinations of mutations and ensure that each of them can be captured at least once. Building up on those, more complex mutators, like the DoorMutator that consists of five other mutators, are shown.\\
 A central task that is left open for implementation by the concept is identifying objects. Two different approaches are shown that were implemented and tested: one tried to cast rays to all objects in a scene and project them to the screen and an object would be deemed visible if it passed both of these tests. A second approach was implemented that imitated the way humans process images: dividing an image into regions by horizontal and vertical intervals, it would send rays originating from the camera into the scene and any object that was hit would be deemed visible in the image.\\
-VERE generates records that are composed of PNG images, meta-data in JSON files and text files for use with the \textit{"Darknet"} framework. In order to inspect those files, a helper application under the working title \emph{"VERE-Viewer"} was implemented. Lastly, \ac{VERE} was tested by running it using different image resolutions to find out how they impact its performance.
-
-% Unity genommen, weil ... 3 Kriterien
-% Rebuilding: Floor nachgebaut, Varianz an Türen, Beispielhaft einen Raum ins Detail
-% Robots:
-%   - Importing Robots: URDF importieren, selbst implementiert weil OpenSource nicht kompatibel
-%   - Controlling robots: fake control, Realismus nicht benötigt
-% Mutators: waren notwending für varianz, Schachtelung sinnvoll, Beispiel: Tür + Lichter
-% Classifying Objects: ???
-% Generating Datasets:
-%   - Bild + Metadatan + Output für Darknet
-%   - VERE-Viewer Visualization?
-% Performancetest gemacht
+VERE generates records that are composed of PNG images, meta-data in JSON files and text files for use with the \textit{"Darknet"} framework. In order to inspect those files, a helper application under the working title \emph{"VERE-Viewer"} was implemented. Lastly, \ac{VERE} was tested by running it on two machines using different image resolutions to find out how they impact its performance.
