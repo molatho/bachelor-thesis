@@ -25,14 +25,39 @@
 }
 
 \chapter{Algorithms}
-\input{tex/src/pseudo-automatic-mode.tex}
+\input{src/pseudo-automatic-mode.tex}
 
-\input{tex/src/pseudo-raycast-screen.tex}
+\input{src/pseudo-raycast-screen.tex}
 
 \chapter{Diagrams}
 \begin{sidewaysfigure}
     \centering
-    \includegraphics[height=350pt]{tex/img/ch05/ClassDiagram_Mutators_Door03.png}
+    \includegraphics[height=350pt]{img/ch05/ClassDiagram_Mutators_Door03.png}
     \captionof{figure}[Mutators class diagram]{Mutator-interfaces and the exemplaric implementation of door-mutators}
     \label{fig:classdiagram-mutators}
+\end{sidewaysfigure}
+
+\chapter{Generated Output}
+\label{chap:appendix-output}
+\begin{sidewaysfigure}
+    \centering
+    \includegraphics[height=350pt]{appendix/P3AT_Test1_2019-01-22_18-28-07_454.png}
+    \captionof{figure}[1080p Output Image]{Rendered image with $1980 \times 1080$ pixels}
+    \label{fig:output-image}
+\end{sidewaysfigure}
+\begin{listing}[ht]
+    \inputminted{json}{appendix/P3AT_Test1_2019-01-22_18-28-07_454.meta.json}
+    \caption{The generated meta file to \ref{fig:output-image} (shortened)}
+    \label{listing:output-meta}
+\end{listing}
+\begin{listing}[ht]
+\inputminted{text}{appendix/P3AT_Test1_2019-01-22_18-28-07_454.txt}
+    \caption{The generated text file to \ref{fig:output-image} for use with the \textit{"Darknet"} framework}
+    \label{listing:output-json}
+\end{listing}
+\begin{sidewaysfigure}
+    \centering
+    \includegraphics[height=350pt]{appendix/VERE-Viewer_2019-01-29.png}
+    \captionof{figure}[Image in VERE-Viewer]{\ref{fig:output-image} and \ref{listing:output-meta} opened in VERE-Viewer}
+    \label{fig:output-viewer}
 \end{sidewaysfigure}

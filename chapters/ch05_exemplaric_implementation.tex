@@ -12,14 +12,14 @@ This implementation of the concept had the working title \emph{\ac{VERE}}. While
 \section{Using Game Engines}
 The decision to use game engines to implement the concept was based on the observation that video games have always striven after improved visual presentation and more intuitive user interaction in order to attract customers, leading to the general availability of game engines that feature impressive graphical detail (as demonstrated in figure \ref{fig:unity-demo-graphics}), intuitive methods to interact with users and great performance on modern computer systems. Their ability to produce realistic images in real-time made them an attractive alternative to traditional offline renderers.
 \begin{center}
-\noindent\includegraphics[width=14cm]{tex/img/ch05/UnityGraphicsDemo.png}
+\noindent\includegraphics[width=14cm]{img/ch05/UnityGraphicsDemo.png}
 \captionof{figure}[Unity Engine demo]{Unity Technology's "Book of the Dead" promotional video \cite{UnityDemoRealtimeTeaser}}
 \label{fig:unity-demo-graphics}
 \end{center}
 
 New rendering-technologies that improve the quality of rendered images and performance of the rendering-process are being developed and published by both proprietary and open-source developers. A current example of a new technology recently published is NVIDIA's proprietary "RTX"-technology \cite{NVIDIARTX} that features "Hybrid Rasterization and Ray Tracing" \cite{NVIDIARayTracing} to combine raytracing and conventional rasterization in the rendering-process. A public demonstration of this new technique was shown running on the "Unreal Engine" in a short video (figure \ref{fig:unreal-demo-graphics})\cite{UnrealDemoReflections}.
 \begin{center}
-\noindent\includegraphics[width=14cm]{tex/img/ch05/UnrealGraphicsDemo.png}
+\noindent\includegraphics[width=14cm]{img/ch05/UnrealGraphicsDemo.png}
 \captionof{figure}[NVIDIA RTX demo]{Demonstration of NVIDIA RTX and Microsoft DXR running on the Unreal Engine \cite{UnrealDemoReflections}}
 \label{fig:unreal-demo-graphics}
 \end{center}
@@ -40,7 +40,7 @@ The decision which game engine to use to implement the concept was based on a se
 
 After evaluating modern and popular game engines considering the abovementioned criteria (as shown in \ref{table:game-engines}), the Unity game engine was used for implementation of the concept of this thesis. It was chosen because of its crossplatform-capabilities \cite{UnityPlatformSupport}, regular updates (between two and four updates a month in 2018 \cite{UnityDownloadArchive}), free use for educational purposes \cite{UnityForEducation}, active community of developers \cite{UnityForum} and built-in editor-application. It features a free post-processing stack \cite{UnityPostProcessingStack} and built-in editor (shown in figure \ref{fig:unity-editor}) that allows developers to build scenes, configure objects in scenes and test their games.
 \begin{center}
-\noindent\includegraphics[width=14cm]{tex/img/ch05/UnityScreenshot.png}
+\noindent\includegraphics[width=14cm]{img/ch05/UnityScreenshot.png}
 \captionof{figure}{The Unity Editor}
 \label{fig:unity-editor}
 \end{center}
@@ -54,18 +54,18 @@ As stated in \ref{section:goals-and-constraints} the environment used to base th
     % preliminary
     \sbox\twosubbox{%
       \resizebox{\dimexpr.9\textwidth-1em}{!}{%
-        \includegraphics[height=3cm]{tex/img/ch05/FloorPlan03_small.JPG}%
-        \includegraphics[height=3cm]{tex/img/ch05/BlenderFloor01.png}%
+        \includegraphics[height=3cm]{img/ch05/FloorPlan03_small.JPG}%
+        \includegraphics[height=3cm]{img/ch05/BlenderFloor01.png}%
       }%
     }
     \setlength{\twosubht}{\ht\twosubbox}
     % typeset
     \centering
     \subcaptionbox{\label{fig:floor-plan-image}}{%
-      \includegraphics[height=\twosubht]{tex/img/ch05/FloorPlan03_small.JPG}%
+      \includegraphics[height=\twosubht]{img/ch05/FloorPlan03_small.JPG}%
     }\quad
     \subcaptionbox{\label{fig:floor-plan-blender}}{%
-      \includegraphics[height=\twosubht]{tex/img/ch05/BlenderFloor01.png}%
+      \includegraphics[height=\twosubht]{img/ch05/BlenderFloor01.png}%
     }
     \caption{Floor plan, photo (\ref{fig:floor-plan-image}) and reconstruction in Blender (\ref{fig:floor-plan-blender})}
 \end{figure}
@@ -73,23 +73,23 @@ As stated in \ref{section:goals-and-constraints} the environment used to base th
 \begin{figure}[htp]
     \sbox\twosubbox{%
       \resizebox{12cm}{!}{%
-        \includegraphics[height=3cm]{tex/img/ch05/Door01_small.JPG}%
-        \includegraphics[height=3cm]{tex/img/ch05/Door02_small.JPG}%
+        \includegraphics[height=3cm]{img/ch05/Door01_small.JPG}%
+        \includegraphics[height=3cm]{img/ch05/Door02_small.JPG}%
       }%
     }
     \setlength{\twosubht}{\ht\twosubbox}
     \centering
     \subcaptionbox{\label{fig:door01}}{%
-      \includegraphics[height=\twosubht]{tex/img/ch05/Door01_small.JPG}%
+      \includegraphics[height=\twosubht]{img/ch05/Door01_small.JPG}%
     }\quad
     \subcaptionbox{\label{fig:door02}}{%
-      \includegraphics[height=\twosubht]{tex/img/ch05/Door02_small.JPG}%
+      \includegraphics[height=\twosubht]{img/ch05/Door02_small.JPG}%
     }\\%quad
     \subcaptionbox{\label{fig:door03}}{%
-      \includegraphics[height=\twosubht]{tex/img/ch05/Door04_small.JPG}%
+      \includegraphics[height=\twosubht]{img/ch05/Door04_small.JPG}%
     }\quad
     \subcaptionbox{\label{fig:door04}}{%
-      \includegraphics[height=\twosubht]{tex/img/ch05/Door05_small.JPG}%
+      \includegraphics[height=\twosubht]{img/ch05/Door05_small.JPG}%
     }
     \caption{Various different doors on the floor}
     \label{fig:doors}
@@ -102,7 +102,7 @@ Figure \ref{fig:unity-scene-a205} shows the final reconstruction of room \emph{"
 \begin{center}%[t]
     %\centering
     \noindent
-    \includegraphics[width=12cm]{tex/img/ch05/UnitySceneA205_02.png}
+    \includegraphics[width=12cm]{img/ch05/UnitySceneA205_02.png}
     \captionof{figure}{Reconstruction of room A205 in Unity Editor}
     \label{fig:unity-scene-a205}
 \end{center}
@@ -121,7 +121,7 @@ There were few libraries that provide methods to import robots using URDF-files 
 To solve these problems, a library for parsing URDF-files, \emph{"URDFParser.NET"}, was implemented. The first two problems were solved by implementing a set of interfaces that represent filesystems, directories and files (\ref{fig:filesystem}) for local filesystems and ZIP-archives (using the open-source library \emph{"DotNetZip"} \cite{DotNetZip}) as URDF-files including meshes and textures were usually distributed as ZIP-archives. These interfaces could also be implemented to read files from remote locations such as FTP-servers or websites for future scenarios and use-cases.
 \begin{center}
     \noindent
-    \includegraphics[width=14cm]{tex/img/ch05/URDFParser_FileSystemInterfaces.pdf}
+    \includegraphics[width=14cm]{img/ch05/URDFParser_FileSystemInterfaces.pdf}
     \captionof{figure}{Interfaces for filesystems, directories and files}
     \label{fig:filesystem}
 \end{center}
@@ -145,7 +145,7 @@ While simulating wheel drives, connected limbs and legged movement is possible i
 Figure \ref{fig:pioneer3at} shows a "Pioneer 3AT" robot imported into Unity. The green cylinders represent the colliders of its wheels and it lacks any other colliders. Its only rigid body that had any mass and was simulated for gravity was its chassis. This combination of a single rigid body and one cylindrical collider for each wheel enabled the robot to appear and behave close to a real robot in the scene as neither collision with its chassis nor mass of its wheels were necessary for maneuvering it in the scene. Its wheels would turn when force is applied to its rigid body.
 
 \begin{center}
-    \includegraphics[width=0.39\textwidth]{tex/img/ch05/Pioneer3AT.png}
+    \includegraphics[width=0.39\textwidth]{img/ch05/Pioneer3AT.png}
     \captionof{figure}{A "Pioneer 3AT" robot imported into Unity}
     \label{fig:pioneer3at}
 \end{center}
@@ -164,7 +164,7 @@ The concept of this thesis proposed generating sets of diverse images by utilizi
 Figure \ref{fig:classdiagram-mutators} shows the abovementioned mutators and a set of mutators that were implemented specifically to alter doors. Doors had a \emph{DoorMutator} associated to them which was a MultiMutator that encapsulated five other mutators. Four of them, \emph{DoorMaterialColorMutator}, \emph{DoorMetallicMutator}, \emph{DoorNormalMutator} and \emph{Door-SmoothnessMutator}, altered the color, "metallic" property, intensity of normal maps and "smoothness" property of a door's surface, respectively. \emph{DoorAngleMutator} changed the angle at which a door was opened.\\
 Figure \ref{fig:mutated-door} illustrates how doors had been affected by the mutators. The most-right images demonstrates a case of a poorly configured mutator: the "metallic" property that controls how light is reflected on surfaces, was altered to a value that results in unrealistic appearance.
 \begin{center}
-\noindent\includegraphics[width=10cm]{tex/img/ch05/Results_Door.png}
+\noindent\includegraphics[width=10cm]{img/ch05/Results_Door.png}
 \captionof{figure}[Mutators applied to a door]{A door that shows mutated opening angle, color, light-reflection, normal-map and smoothness}
 \label{fig:mutated-door}
 \end{center}
@@ -184,35 +184,35 @@ A great problem with this approach proved to be its implications on performance:
     % preliminary
     \sbox\twosubbox{%
       \resizebox{14cm}{!}{%
-        \includegraphics[height=6cm]{tex/img/ch05/Labelling_W2S01a.png}%
-        \includegraphics[height=6cm]{tex/img/ch05/Labelling_W2S02a.png}%
-        \includegraphics[height=6cm]{tex/img/ch05/Labelling_W2S03.png}%
-        \includegraphics[height=6cm]{tex/img/ch05/Labelling_W2S04a.png}%
-        \includegraphics[height=6cm]{tex/img/ch05/Labelling_W2S05a.png}%
-        \includegraphics[height=6cm]{tex/img/ch05/Labelling_W2S06.png}%
-        \includegraphics[height=6cm]{tex/img/ch05/Labelling_W2S06.png}%
+        \includegraphics[height=6cm]{img/ch05/Labelling_W2S01a.png}%
+        \includegraphics[height=6cm]{img/ch05/Labelling_W2S02a.png}%
+        \includegraphics[height=6cm]{img/ch05/Labelling_W2S03.png}%
+        \includegraphics[height=6cm]{img/ch05/Labelling_W2S04a.png}%
+        \includegraphics[height=6cm]{img/ch05/Labelling_W2S05a.png}%
+        \includegraphics[height=6cm]{img/ch05/Labelling_W2S06.png}%
+        \includegraphics[height=6cm]{img/ch05/Labelling_W2S06.png}%
       }%
     }
     \setlength{\twosubht}{\ht\twosubbox}
     % typeset
     \centering
     \subcaptionbox{\label{fig:labelling01}}{%
-      \includegraphics[height=\twosubht]{tex/img/ch05/Labelling_W2S01a.png}%
+      \includegraphics[height=\twosubht]{img/ch05/Labelling_W2S01a.png}%
     }\quad
     \subcaptionbox{\label{fig:labelling02}}{%
-      \includegraphics[height=\twosubht]{tex/img/ch05/Labelling_W2S06.png}%
+      \includegraphics[height=\twosubht]{img/ch05/Labelling_W2S06.png}%
     }\quad
     \subcaptionbox{\label{fig:labelling03}}{%
-      \includegraphics[height=\twosubht]{tex/img/ch05/Labelling_W2S03.png}%
+      \includegraphics[height=\twosubht]{img/ch05/Labelling_W2S03.png}%
     }\quad
     \subcaptionbox{\label{fig:labelling05}}{%
-      \includegraphics[height=\twosubht]{tex/img/ch05/Labelling_W2S04a.png}%
+      \includegraphics[height=\twosubht]{img/ch05/Labelling_W2S04a.png}%
     }\quad
     \subcaptionbox{\label{fig:labelling06}}{%
-      \includegraphics[height=\twosubht]{tex/img/ch05/Labelling_W2S05a.png}%
+      \includegraphics[height=\twosubht]{img/ch05/Labelling_W2S05a.png}%
     }\quad
     \subcaptionbox{\label{fig:labelling04}}{%
-      \includegraphics[height=\twosubht]{tex/img/ch05/Labelling_W2S02a.png}%
+      \includegraphics[height=\twosubht]{img/ch05/Labelling_W2S02a.png}%
     }
     \caption[Raycasting and projection approach]{Drawing regions of the identified door from multiple perspectives}
     \label{fig:w2s-labelling}
@@ -230,30 +230,30 @@ Therefore the algorithm implemented in this approach (shown in algorithm \ref{al
     % preliminary
     \sbox\twosubbox{%
       \resizebox{14cm}{!}{%
-        \includegraphics[height=3cm]{tex/img/ch05/RaycastingAlgorithm01.png}%
-        \includegraphics[height=3cm]{tex/img/ch05/RaycastingAlgorithm02.png}%
-        \includegraphics[height=3cm]{tex/img/ch05/RaycastingAlgorithm03.png}%
-        \includegraphics[height=3cm]{tex/img/ch05/RaycastingAlgorithm03.png}%
-        \includegraphics[height=3cm]{tex/img/ch05/RaycastingAlgorithm03.png}%
+        \includegraphics[height=3cm]{img/ch05/RaycastingAlgorithm01.png}%
+        \includegraphics[height=3cm]{img/ch05/RaycastingAlgorithm02.png}%
+        \includegraphics[height=3cm]{img/ch05/RaycastingAlgorithm03.png}%
+        \includegraphics[height=3cm]{img/ch05/RaycastingAlgorithm03.png}%
+        \includegraphics[height=3cm]{img/ch05/RaycastingAlgorithm03.png}%
       }%
     }
     \setlength{\twosubht}{\ht\twosubbox}
     % typeset
     \centering
     %\subcaptionbox{\label{fig:rclabelling01}}{%
-    %  \includegraphics[height=\twosubht]{tex/img/ch05/RaycastingAlgorithm01.png}%
+    %  \includegraphics[height=\twosubht]{img/ch05/RaycastingAlgorithm01.png}%
     %}\quad
     \subcaptionbox{\label{fig:rclabelling02}}{%
-      \includegraphics[height=\twosubht]{tex/img/ch05/RaycastingAlgorithm02.png}%
+      \includegraphics[height=\twosubht]{img/ch05/RaycastingAlgorithm02.png}%
     }\quad
     \subcaptionbox{\label{fig:rclabelling03}}{%
-      \includegraphics[height=\twosubht]{tex/img/ch05/RaycastingAlgorithm03.png}%
+      \includegraphics[height=\twosubht]{img/ch05/RaycastingAlgorithm03.png}%
     }\quad%\\
     \subcaptionbox{\label{fig:rclabelling05}}{%
-      \includegraphics[height=\twosubht]{tex/img/ch05/RaycastingAlgorithm04.png}%
+      \includegraphics[height=\twosubht]{img/ch05/RaycastingAlgorithm04.png}%
     }\quad
     \subcaptionbox{\label{fig:rclabelling06}}{%
-      \includegraphics[height=\twosubht]{tex/img/ch05/RaycastingAlgorithm05.png}%
+      \includegraphics[height=\twosubht]{img/ch05/RaycastingAlgorithm05.png}%
     }
     \caption{Various stages the raycasting algorithm went through}
     %\caption{Ray-Casting algorithm: division of the original image (\ref{fig:rclabelling01}) by horizontal and vertical lines (\ref{fig:rclabelling02}), detection of objects hit by rays (\ref{fig:rclabelling03}), calculating rectangles that cover objects (\ref{fig:rclabelling05}) and extending them to include neighboured area (\ref{fig:rclabelling06})}
@@ -280,14 +280,14 @@ Using a rather rough scan-resolution of $10 \times 5$, at any distance of $n$ me
 The execution-time this algorithm needed to identify objects in images was not depending on the number of tagged objects in the scene anymore but instead depended on the time needed to perform a fixed set of ray-casts. This allowed scenes to grow in size and complexity as the number of tagged objects would not influence the labelling-process anymore. In order to run this algorithm in real-time, a maximum distance had to be defined so that casting individual rays was deterministic. Depending on the scenario at hand, this limit should be set to the highest distance the object-recognition should still be able to detect objects at. Also, by defining appropriate scan-resolutions, the resulting regions would not include objects that were too far away from the camera or only had small parts of them visible.
 
 \section{Generating Datasets}
-Right after loading a scene \ac{VERE} created a list of all distinct labels associated to tagged objects. When it saved captured images it created a JSON file that included information about the position and rotation of the camera that was used to capture the image and a list of identified objects along with the position and size (in pixels) of their associated region in the image and their label. It also saved a textfile for each image that can be used with the neural network framework \emph{"Darknet"}.\\
+Right after loading a scene \ac{VERE} created a list of all distinct labels associated to tagged objects. When it saved captured images it created a JSON file that included information about the position and rotation of the camera that was used to capture the image and a list of identified objects along with the position and size (in pixels) of their associated region in the image and their label. It also saved a textfile for each image that can be used with the neural network framework \emph{"Darknet"}. Sample output is shown in \ref{chap:appendix-output}.\\
 In order to shorten the duration of the recording process, identification of objects in the scene was only performed once per mutation cycle as the robot did not move during the capture process. However this optimization did not take mutators into account that altered the geometry or transforms of objects, potentially leading to inaccurate detection regions.
 
-\subsection{Inspecting the Generated Output}
+\subsubsection{Inspecting the Generated Output}
 To verify the correctness of the output generated by \ac{VERE} an application was needed that parsed the generated files and visualized the regions of identified objects. A desktop application was implemented under the working title \emph{VERE-Viewer}. It used utilized components provided by the .NET Framework for its UI.
 
 \begin{center}
-\noindent\includegraphics[width=14cm]{tex/img/ch05/VERE_Viewer_Application02.png}
+\noindent\includegraphics[width=14cm]{img/ch05/VERE_Viewer_Application02.png}
 \captionof{figure}[The VERE-Viewer application]{VERE-Viewer visualizing regions of identified objects}
 \label{fig:vere-viewer}
 \end{center}
@@ -306,17 +306,17 @@ Table \ref{table:vere-performance} shows how \ac{VERE} performed on this hardwar
 
 \begin{table}[htp]
     \centering
-    \begin{tabular}{c|c|c|c|c|c|c}
+    \begin{tabular}{c|c|r|r|r|r|r}
         \toprule
               \thead{$Machine$} & \thead{$Image$\\$Resolution$} & \thead{$Cycle \#1 (s)$} & \thead{$Cycle \#2 (s)$} & \thead{$Cycle \#3 (s)$} & \thead{$Cycle$\\$Average (s)$} & \thead{$Captures$ \textbackslash $s$} \\
         \midrule
-            \multirow{3}*{\#1} & $640 \times 360$ & 49.64 & 53.97 & 51.41 & 51.67 & 18.79 \\
-            & $1920 \times 1080$ & 260.32 & 272.01 & 287.14 & 273.16 & 3.55 \\
-            & $3840 \times 2160$ & 871.69 & 903.18 & 899.74 & 891.54 & 1.09 \\
+            \multirow{3}*{\#1} & $640 \times 360$ & $49.64$ & $53.97$ & $51.41$ & $51.67$ & $18.79$ \\
+            & $1920 \times 1080$ & $260.32$ & $272.01$ & $287.14$ & $273.16$ & $3.55$ \\
+            & $3840 \times 2160$ & $871.69$ & $903.18$ & $899.74$ & $891.54$ & $1.09$ \\
         \midrule
-            \multirow{3}*{\#2} & $640 \times 360$ & 39.94 & 41.64 & 39.67 & 40.42 & 24.02 \\
-            & $1920 \times 1080$ & 149.33 & 142.25 & 144.77 & 145.45 & 6.68 \\
-            & $3840 \times 2160$ & 501.56 & 526.10 & 537.65 & 521.77 & 1.86 \\
+            \multirow{3}*{\#2} & $640 \times 360$ & $39.94$ & $41.64$ & $39.67$ & $40.42$ & $24.02$ \\
+            & $1920 \times 1080$ & $149.33$ & $142.25$ & $144.77$ & $145.45$ & $6.68$ \\
+            & $3840 \times 2160$ & $501.56$ & $526.10$ & $537.65$ & $521.77$ & $1.86$ \\
         \bottomrule
     \end{tabular}
     \caption[Comparison of recording sessions]{Recording sessions with different image resolutions on different machines}

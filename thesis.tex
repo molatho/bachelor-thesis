@@ -1,8 +1,9 @@
+%%TC:ignore
 % Preambel mit Einstellungen importieren
-\input{tex/preambel.tex}
+\input{preambel.tex}
 
 % Dokumenteninfos importieren
-\input{tex/docinfo.tex}
+\input{docinfo.tex}
 
 % Literatur-Datenbank
 \addbibresource{literatur.bib} %Imports bibliography file
@@ -36,6 +37,7 @@
 
 % ------------------------------------------------------------------
 % Hauptteil der Arbeit
+%%TC:endignore
 \input{chapters/ch01_introduction}
 \input{chapters/ch02_related_work}
 \input{chapters/ch03_theoretical_background}
@@ -43,6 +45,7 @@
 \input{chapters/ch05_exemplaric_implementation}
 \input{chapters/ch06_summary} 
 \input{chapters/ch07_conclusion} 
+%%TC:ignore
 % ------------------------------------------------------------------
 
 \label{lastpage}
@@ -59,7 +62,7 @@
 
 % Abkürzungsverzeichnis
 \addchap{\hsmaabbreviations}
-\input{tex/chapters/abbreviations.tex}
+\input{chapters/abbreviations.tex}
 
 % Tabellenverzeichnis erzeugen
 \cleardoublepage
@@ -90,6 +93,7 @@
 \printindex
 
 \appendix
-\input{tex/chapters/appendix.tex}
+\input{chapters/appendix.tex}
 
 \end{document}
+%%TC:endignore

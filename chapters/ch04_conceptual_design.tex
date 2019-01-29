@@ -9,7 +9,7 @@ This chapter will introduce the terminology, central ideas and architectural bas
 The system features at least one virtual 3D environment (a \emph{scene}) that represents a specific place (either an existing or non-existing place) and a virtual \emph{robot} that operates in said environment. It is used by two groups of users: \emph{designers} and \emph{\ac{AI} engineers}. Figure \ref{fig:use-cases-abstract} shows these groups of users and their high-level and abstract use-cases.
 \begin{figure}[t]
     \centering
-    \includegraphics[width=6cm]{tex/img/ch04/UseCases_HighLevel.pdf}
+    \includegraphics[width=6cm]{img/ch04/UseCases_HighLevel.pdf}
     \captionof{figure}{High-level Use-Cases}
     \label{fig:use-cases-abstract}
 \end{figure}
@@ -21,7 +21,7 @@ Scenes need to be created, modeled using geometry, populated with entities and c
 A \emph{record} is a data-structure that contains an image and a list of labels. \emph{Labels} hold information about the region in an image that a classifier was identified at. Records may contain meta-data about images, such as the location and view-angles of the camera at the time of capturing the images. This meta-data may prove useful when reconstructing the exact position of robots from generated sets of images. The types asterisked in Figure \ref{fig:classes-record} are placeholders that are implementation-specific.
 \begin{figure}[b]
     \centering
-    \includegraphics[width=8cm]{tex/img/ch04/Classes_Record.pdf}
+    \includegraphics[width=8cm]{img/ch04/Classes_Record.pdf}
     \captionof{figure}{Data-structure "Record"}
     \label{fig:classes-record}
 \end{figure}
@@ -35,14 +35,14 @@ In order to provide visual variety to the generated images, \emph{mutators} alte
 \emph{Waypoints} (shown in \ref{fig:classes-waypoint}) are simple coordinates in the 3D space of a scene that can be used to define paths that robots can travel along. They may hold a reference to another waypoint, allowing designers and \acs{AI} engineers to easily create paths.  
 \begin{figure}[t]
     \centering
-    \includegraphics[width=4cm]{tex/img/ch04/Classes_Waypoint.pdf}
+    \includegraphics[width=4cm]{img/ch04/Classes_Waypoint.pdf}
     \captionof{figure}{Data-structure "Waypoint"}
     \label{fig:classes-waypoint}
 \end{figure}
 The specific design of scenes and robots and the implementation of mutators depend on the scenario that the object-recognition software, that is to be trained, is used in: software run on cars should be trained using images generated in scenes that represent the environment the car is planned to be operated in and the robots used in these scenes should be modeled so they closely represent the car the software is to be run on, considering physical attributes (such as the car's shape, surfaces and size), behaviour (including acceleration, weight and steering)  and sensor-placement, where visual sensors such as cameras are of the highest importance to the process of generating images.
 
 %\begin{center}
-%\noindent\includegraphics[width=6cm]{tex/img/ch04/Use_Cases_06.png}
+%\noindent\includegraphics[width=6cm]{img/ch04/Use_Cases_06.png}
 %\captionof{figure}{Abstract use-Cases}
 %\label{fig:use-cases-abstract}
 %\end{center}
@@ -65,7 +65,7 @@ Designers need to import assets (such as 3D models, materials and textures) into
 Figure \ref{fig:use-cases} summarizes these refinements and shows that most use-cases are interacted with by only one role, separating them into groups of use-cases required for initial setup ("Create ..."), run-time ("Robot" and "Recording" use-cases) and a special group that is used to tweak run-time behaviour to achieve varying sets of records ("Manage Waypoints", "Manage Mutators"). 
 \begin{figure}
     \centering
-    \includegraphics[width=10cm]{tex/img/ch04/UseCases_Fine.pdf}
+    \includegraphics[width=10cm]{img/ch04/UseCases_Fine.pdf}
     \captionof{figure}{Refined Use-Cases}
     \label{fig:use-cases}
 \end{figure}
@@ -78,7 +78,7 @@ The abovementioned automatic mode the system can run in (shown in Figure \ref{fi
 When active, it will alter a scene by advancing mutation and capture records as long as the mutation-cycle has not been completed. Once the mutation-cycle is completed, the mutation will be reset. If the robot in the scene has not reached its destination yet it will be moved and the process continues by running the mutation-cycle again.\\
 \begin{figure}[htb!]
     \centering
-    \includegraphics[width=8cm]{tex/img/ch04/ActivityDiagram_HighLevel.pdf}
+    \includegraphics[width=8cm]{img/ch04/ActivityDiagram_HighLevel.pdf}
     \captionof{figure}{Control Flow of the automatic mode}
     \label{fig:control-flow}
 \end{figure}
@@ -88,7 +88,7 @@ This behaviour effectively iterates through all mutations set up for a scene, ap
 \section{Components}
 \begin{figure}[hb!]
     \centering
-    \includegraphics[width=8cm]{tex/img/ch04/ComponentDiagram_System.pdf}
+    \includegraphics[width=8cm]{img/ch04/ComponentDiagram_System.pdf}
     \captionof{figure}{High-level component diagram}
     \label{fig:component-diagram}
 \end{figure}
@@ -96,7 +96,7 @@ This behaviour effectively iterates through all mutations set up for a scene, ap
 The "Recording"-package (Figure \ref{fig:component-diagram-recording}) contains two abstract components: \emph{CaptureController} is used to start and stop automatic capturing of records. It captures images and enriches those with labels by making use of the \emph{ImageLabeller}-component. The ImageLabeller-component needs to be able to identify classifiers in images. As neither capturing images nor identifying classifiers are necessarily trivial tasks, the implementation of both components is greatly influenced and in some cases dictated by the scenario and technology used. While capturing images is usually easily achieved in software that features visualization of the virtual environments, "headless" software running without any visual output may require external software to render images resulting in the CaptureController-component effectively being implemented by software running on two separate systems, increasing the complexity of the implementation.
 \begin{figure}
     \centering
-    \includegraphics[width=6cm]{tex/img/ch04/ComponentDiagram_Recording.pdf}
+    \includegraphics[width=6cm]{img/ch04/ComponentDiagram_Recording.pdf}
     \captionof{figure}{"Recording"-package}
     \label{fig:component-diagram-recording}
 \end{figure}
@@ -106,7 +106,7 @@ The \emph{SceneGeometry}-component holds all 3D objects of a scene that amount t
 A \emph{SceneEntities}-component stores all entities of a scene and manages their life-cycles. In a simple implementation this component could use lists or arrays internally.
 \begin{figure}[hb!]
     \centering
-    \includegraphics[width=8cm]{tex/img/ch04/ComponentDiagram_SceneManagement.pdf}
+    \includegraphics[width=8cm]{img/ch04/ComponentDiagram_SceneManagement.pdf}
     \captionof{figure}{"SceneManagement"-package}
     \label{fig:component-diagram-scenemanagement}
 \end{figure}
