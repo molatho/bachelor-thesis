@@ -109,8 +109,8 @@ Figure \ref{fig:unity-scene-a205} shows the final reconstruction of room \emph{"
 
 %////////////////////////////////////////////////
 \subsection{Adding Robots to the Scene}
+Once the scene is set up, a robot is needed for \acs{AI} engineers to navigate around the scene and capture records. For this implementation the robot model "Pioneer 3AT" was chosen as the Institute of Robotics of University of Applied Sciences Mannheim works with "Pioneer"-robots and there were \ac{URDF} files of it available \cite{AmrRosConfig} online.
 \subsubsection{Importing Robots}
-Once the scene is set up, a robot is needed for \acs{AI} engineers to navigate around the scene and capture records. For this implementation the robot model "Pioneer 3AT" was chosen as the Institute of Robotics of University of Applied Sciences Mannheim works with "Pioneer"-robots and there were \ac{URDF} files of it available \cite{AmrRosConfig} online.\\
 There were few libraries that provide methods to import robots using URDF-files into Unity, an extensive one was \emph{"ROS\#"} which was developed by Siemens AG. Siemens described it to be \textit{"a set of open source software libraries and tools in C\# for communicating with ROS from .NET applications, in particular Unity3D"} \cite{RosSharp}. This project implemented connecting to ROS instances, ROS' publish/subscribe pattern and importing robots into Unity scenes, however its software design introduced some potential problems: 
 \begin{enumerate}
     \item Importing robots using URDF-files was done by downloading URDF-files from running ROS-instances. The need for a running ROS-instance would add to \ac{VERE}'s system requirements.
@@ -118,7 +118,7 @@ There were few libraries that provide methods to import robots using URDF-files 
     \item ROS\#'s URDF importing component required the URDF files to be present in the "Asset" folder of Unity projects. This meant that URDF files downloaded from remote locations needed to be written to disk and compressed archives that contained additional files like meshes and textures needed to be extracted to disk first.
     \item Even though robots imported by ROS\# had correct hierarchy of body parts and correct physical properties (as defined in the robots' URDF), Unity's physics engine often times failed to simulate physics at run-time, leading to robots being unable to move, falling through floors or being propelled into the air.
 \end{enumerate}
-To solve these problems, a library for parsing URDF-files, \emph{"URDFParser.NET"}, was implemented. The first two problems were solved by implementing a set of interfaces that represent filesystems, directories and files (\ref{fig:filesystem}) for local filesystems and ZIP-archives (using the open-source library \emph{"DotNetZip"} \cite{DotNetZip}) as URDF-files including meshes and textures were usually distributed as ZIP-archives. These interfaces could also be implemented to read files from remote locations such as FTP-servers or websites for future scenarios and use-cases.
+To solve these problems, a library for parsing URDF-files, \emph{"URDFParser.NET"}, was implemented. The first two problems were solved by implementing a set of interfaces that represent filesystems, directories and files (shown in Figure \ref{fig:filesystem}) for local filesystems and ZIP-archives (using the open-source library \emph{"DotNetZip"} \cite{DotNetZip}) as URDF-files including meshes and textures were usually distributed as ZIP-archives. These interfaces could also be implemented to read files from remote locations such as FTP-servers or websites for future scenarios and use-cases.
 \begin{center}
     \noindent
     \includegraphics[width=14cm]{img/ch05/URDFParser_FileSystemInterfaces.pdf}
@@ -143,13 +143,14 @@ While simulating wheel drives, connected limbs and legged movement is possible i
 \end{itemize}
 
 Figure \ref{fig:pioneer3at} shows a "Pioneer 3AT" robot imported into Unity. The green cylinders represent the colliders of its wheels and it lacks any other colliders. Its only rigid body that had any mass and was simulated for gravity was its chassis. This combination of a single rigid body and one cylindrical collider for each wheel enabled the robot to appear and behave close to a real robot in the scene as neither collision with its chassis nor mass of its wheels were necessary for maneuvering it in the scene. Its wheels would turn when force is applied to its rigid body.
-
-\begin{center}
+%\begin{center}
+\begin{figure}[t]
+    \centering
     \includegraphics[width=0.39\textwidth]{img/ch05/Pioneer3AT.png}
     \captionof{figure}{A "Pioneer 3AT" robot imported into Unity}
     \label{fig:pioneer3at}
-\end{center}
-
+\end{figure}
+%\end{center}
 Unity unifies input of various different input devices by providing an extendable set of values that either buttons and axis of one or multiple input devices can be mapped to. In its default configuration, Unity maps input for movement from both digital inputs like keyboards and analog inputs like joysticks to two axis, one for horizontal and one for vertical movement. As a result, pressing the "A" or "Arrow Up" buttons on a keyboard and pushing a joystick into the positive direction of its $y$ axis would affect the vertical input axis. In scripts, this could then be accessed by a simple call to $Input.GetAxis("Vertical")$ which would return a value in the interval $[-1, 1]$ where positive values indicated a movement forwards and negative values indicated a movement backwards. Analogue to this, negative values of the horizontal axis would indicate movement to the left and positive values would indicate movement to the right.\\
 In \ac{VERE}, the vertical axis for forwards and backwards movement was used to apply either a positive or negative force to the robot's body in its forward direction which would make it accelerate and decelerate. The horizontal axis was used to apply a torque force to its body, allowing it to steer. Due to the mass of the robot the applied torque force was not sufficient to move it while it was standing still, however it was strong enough to apply slight steering to the robot while it was driving, which in turn appeared realistic.
 
@@ -162,13 +163,13 @@ The concept of this thesis proposed generating sets of diverse images by utilizi
 \item [ParallelMutator] There were cases where single mutators did not have great influence on scenes or did not have to have a whole mutation-step in a scene dedicated to them. For instance in this implementation, lamps in room A205 were mutated in parallel by using a ParallelMutator. These mutators would group other mutators like MultiMutators did, however upon mutation it would advance all of its mutators at the same time. Mutators that finished their current cycle were skipped. The number steps a ParallelMutator needed to complete a cycle was the number of steps the slowest of its mutators took to complete a cycle. ParallelMutators may have mutators of varying cycle lengths resulting in steps that few or only one of its mutators were advanced at.
 \end{description}
 Figure \ref{fig:classdiagram-mutators} shows the abovementioned mutators and a set of mutators that were implemented specifically to alter doors. Doors had a \emph{DoorMutator} associated to them which was a MultiMutator that encapsulated five other mutators. Four of them, \emph{DoorMaterialColorMutator}, \emph{DoorMetallicMutator}, \emph{DoorNormalMutator} and \emph{Door-SmoothnessMutator}, altered the color, "metallic" property, intensity of normal maps and "smoothness" property of a door's surface, respectively. \emph{DoorAngleMutator} changed the angle at which a door was opened.\\
-Figure \ref{fig:mutated-door} illustrates how doors had been affected by the mutators. The most-right images demonstrates a case of a poorly configured mutator: the "metallic" property that controls how light is reflected on surfaces, was altered to a value that results in unrealistic appearance.
+Figure \ref{fig:mutated-door} illustrates how doors had been affected by the mutators. The most-right images demonstrate a case of a poorly configured mutator: the "metallic" property that controls how light is reflected on surfaces, was altered to a value that results in unrealistic appearance. Similar mutators were implemented for ceiling lights (altering the intensity and range of lights), ambient light (mutating intensity and color) and the sun (altering color, intensity and orientation).
 \begin{center}
-\noindent\includegraphics[width=10cm]{img/ch05/Results_Door.png}
-\captionof{figure}[Mutators applied to a door]{A door that shows mutated opening angle, color, light-reflection, normal-map and smoothness}
-\label{fig:mutated-door}
+    \noindent
+    \includegraphics[width=10cm]{img/ch05/Results_Door.png}
+    \captionof{figure}[Mutators applied to a door]{A door that shows mutated opening angle, color, light-reflection, normal-map and smoothness}
+    \label{fig:mutated-door}
 \end{center}
-Similar mutators were implemented for ceiling lights (altering the intensity and range of lights), ambient light (mutating intensity and color) and the sun (altering color, intensity and orientation).
 
 %////////////////////////////////////////////////
 \section{Identifying Classifiers}
@@ -217,7 +218,6 @@ A great problem with this approach proved to be its implications on performance:
     \caption[Raycasting and projection approach]{Drawing regions of the identified door from multiple perspectives}
     \label{fig:w2s-labelling}
 \end{figure}
-
 Another problem was determining how to create the points on colliders to test for: complex colliders, such as mesh-colliders, could have any shape and any distance from one vertex to another. Those could also have shapes that have vertices that may be occluded by faces and thus never or just rarely be visible, such as convex shapes. As a result, testing for them potentially wasted valuable computing time. Even simple shapes such as cubes and cylinders were not trivial to test for as with increasing scale of objects, the distance between vertices may grow too large to test for: for instance a cube that had an edge length of one meter and had points added to its vertices, three points on each edge and four points evenly distributed on each face, the distance between any neighbouring points would be 25 centimeters. Scaling the cube by a factor of 100 would also scale the distance between said points by 100 and result in neighbouring points being 25 meters away from each other.\\
 Solving this problem would require dynamically generating points on colliders, taking the shape and scale of an object into account.
 
@@ -284,13 +284,13 @@ Right after loading a scene \ac{VERE} created a list of all distinct labels asso
 In order to shorten the duration of the recording process, identification of objects in the scene was only performed once per mutation cycle as the robot did not move during the capture process. However this optimization did not take mutators into account that altered the geometry or transforms of objects, potentially leading to inaccurate detection regions.
 
 \subsubsection{Inspecting the Generated Output}
-To verify the correctness of the output generated by \ac{VERE} an application was needed that parsed the generated files and visualized the regions of identified objects. A desktop application was implemented under the working title \emph{VERE-Viewer}. It used utilized components provided by the .NET Framework for its UI.
-
+To verify the correctness of the output generated by \ac{VERE} an application was needed that parsed the generated files and visualized the regions of identified objects. A desktop application was implemented under the working title \emph{VERE-Viewer} (shown in Figure \ref{fig:vere-viewer}).
 \begin{center}
 \noindent\includegraphics[width=14cm]{img/ch05/VERE_Viewer_Application02.png}
 \captionof{figure}[The VERE-Viewer application]{VERE-Viewer visualizing regions of identified objects}
 \label{fig:vere-viewer}
 \end{center}
+It utilized components provided by the .NET Framework for its user interface and because both \ac{VERE} and VERE-Viewer were written in C\#, parts of \ac{VERE}'s code (such as the classes of the \acp{DTO} used for meta files) could be used in the viewer application.
 
 %////////////////////////////////////////////////
 \section{Performance of the Software}
@@ -300,11 +300,8 @@ To test \ac{VERE} it was run on two machines with different hardware:
     \item Machine \#1 featured a \textit{Intel i5-2310} CPU, \textit{NVIDIA GeForce GTX 760} GPU and a \textit{Kingston A400} SSD.
     \item Machine \#2 featured a \textit{AMD Ryzen 7 1700X} CPU, \textit{NVIDIA GeForce GTX 1080} GPU and a \textit{Western Digital WDS512G1X0C} M.2 SSD.
 \end{itemize}
-Table \ref{table:vere-performance} shows how \ac{VERE} performed on this hardware in automatic mode (shown in detail in section \ref{ch04-control-flow}), completing three mutation-cycles with images using a very low resolution ($640 \times 360$ pixels), a common resolution used in modern monitors ($1920 \times 1080$ pixels, commonly referred to as \textit{"Full HD"} and \textit{"1080p"}) and a very high resolution that is used in modern high end displays (also known as \textit{"4K UHD"} and \textit{"4K"}). The scan resolution chosen was $200 \times 50$.
-
 \newcommand{\minitab}[2][l]{\begin{tabular}{#1}#2\end{tabular}}
-
-\begin{table}[htp]
+\begin{table}[h]
     \centering
     \begin{tabular}{c|c|r|r|r|r|r}
         \toprule
@@ -322,3 +319,4 @@ Table \ref{table:vere-performance} shows how \ac{VERE} performed on this hardwar
     \caption[Comparison of recording sessions]{Recording sessions with different image resolutions on different machines}
     \label{table:vere-performance}
 \end{table}
+Table \ref{table:vere-performance} shows how \ac{VERE} performed on this hardware in automatic mode (shown in detail in section \ref{ch04-control-flow}), completing three mutation-cycles with images using a very low resolution ($640 \times 360$ pixels), a common resolution used in modern monitors ($1920 \times 1080$ pixels, commonly referred to as \textit{"Full HD"} and \textit{"1080p"}) and a very high resolution that is used in modern high end displays (also known as \textit{"4K UHD"} and \textit{"4K"}). The scan resolution chosen was $200 \times 50$.
