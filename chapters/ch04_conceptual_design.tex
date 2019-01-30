@@ -79,16 +79,17 @@ When active, it will alter a scene by advancing mutation and capture records as 
 \begin{figure}[htb!]
     \centering
     \includegraphics[width=8cm]{img/ch04/ActivityDiagram_HighLevel.pdf}
-    \captionof{figure}{Control Flow of the automatic mode}
+    \captionof{figure}{Control flow of the automatic mode}
     \label{fig:control-flow}
 \end{figure}
 This behaviour effectively iterates through all mutations set up for a scene, applies them, captures records for each mutation and does so each time the robots is moved. The only step that is largely independent of implementation is "Reset Mutation" as it will only recover the initial state of all entities in a scene. "Alter Scene", "Capture Record" and "Move Robot" are heavily dependent on the scenario at hand and the specific implementation. For instance, "Move Robot" may either simulate movement of robots by using their physical properties and bodies or simply move them to another position instantly.
 
 %////////////////////////////////////////////////
 \section{Components}
+While the high-level use-cases (Figure \ref{fig:use-cases-abstract}) implicate the need for three high-level components, refinement of the use-cases (Figure \ref{fig:use-cases}) encourages the use of packages to encapsulate complex components. Figure \ref{fig:component-diagram} shows an abstract component used for controlling robots (\emph{RobotController}), a package that provides components needed for capturing records (\emph{Recording}) and another one that contains components used to manage scenes (\emph{SceneManagement}).
 \begin{figure}[hb!]
     \centering
-    \includegraphics[width=8cm]{img/ch04/ComponentDiagram_System.pdf}
+    \includegraphics[width=10cm]{img/ch04/ComponentDiagram_System.pdf}
     \captionof{figure}{High-level component diagram}
     \label{fig:component-diagram}
 \end{figure}
@@ -96,7 +97,7 @@ This behaviour effectively iterates through all mutations set up for a scene, ap
 The "Recording"-package (Figure \ref{fig:component-diagram-recording}) contains two abstract components: \emph{CaptureController} is used to start and stop automatic capturing of records. It captures images and enriches those with labels by making use of the \emph{ImageLabeller}-component. The ImageLabeller-component needs to be able to identify classifiers in images. As neither capturing images nor identifying classifiers are necessarily trivial tasks, the implementation of both components is greatly influenced and in some cases dictated by the scenario and technology used. While capturing images is usually easily achieved in software that features visualization of the virtual environments, "headless" software running without any visual output may require external software to render images resulting in the CaptureController-component effectively being implemented by software running on two separate systems, increasing the complexity of the implementation.
 \begin{figure}
     \centering
-    \includegraphics[width=6cm]{img/ch04/ComponentDiagram_Recording.pdf}
+    \includegraphics[width=8cm]{img/ch04/ComponentDiagram_Recording.pdf}
     \captionof{figure}{"Recording"-package}
     \label{fig:component-diagram-recording}
 \end{figure}
@@ -106,7 +107,7 @@ The \emph{SceneGeometry}-component holds all 3D objects of a scene that amount t
 A \emph{SceneEntities}-component stores all entities of a scene and manages their life-cycles. In a simple implementation this component could use lists or arrays internally.
 \begin{figure}[hb!]
     \centering
-    \includegraphics[width=8cm]{img/ch04/ComponentDiagram_SceneManagement.pdf}
+    \includegraphics[width=11cm]{img/ch04/ComponentDiagram_SceneManagement02.pdf}
     \captionof{figure}{"SceneManagement"-package}
     \label{fig:component-diagram-scenemanagement}
 \end{figure}
